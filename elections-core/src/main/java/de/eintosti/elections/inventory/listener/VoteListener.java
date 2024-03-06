@@ -1,13 +1,30 @@
-package com.eintosti.elections.inventory.listener;
+/*
+ * Copyright (c) 2018-2024, Thomas Meaney
+ * Copyright (c) contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package de.eintosti.elections.inventory.listener;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
-import com.eintosti.elections.ElectionsPlugin;
-import com.eintosti.elections.api.election.settings.SettingsPhase;
-import com.eintosti.elections.election.ElectionImpl;
-import com.eintosti.elections.inventory.VoteInventory;
-import com.eintosti.elections.util.InventoryUtils;
-import com.eintosti.elections.util.Messages;
+import de.eintosti.elections.ElectionsPlugin;
+import de.eintosti.elections.api.election.phase.PhaseType;
+import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.inventory.VoteInventory;
+import de.eintosti.elections.messages.Messages;
+import de.eintosti.elections.util.InventoryUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,19 +42,19 @@ public class VoteListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!InventoryUtils.checkIfValidClick(event, Messages.getString("vote_title"))) {
+        if (!InventoryUtils.isValidClick(event, Messages.getString("vote.title"))) {
             return;
         }
 
         ElectionImpl election = plugin.getElection();
-        if (election.getPhase().getSettingsPhase() != SettingsPhase.VOTING) {
+        if (election.getPhase().getPhaseType() != PhaseType.VOTING) {
             return;
         }
 
         Player player = (Player) event.getWhoClicked();
         if (!player.hasPermission("elections.vote")) {
             player.closeInventory();
-            Messages.sendMessage(player, "vote_noPerms");
+            Messages.sendMessage(player, "election.vote.no_permission");
             return;
         }
 
@@ -50,7 +67,7 @@ public class VoteListener implements Listener {
                 if (skullSlot >= 9 && skullSlot <= 17) {
                     ItemStack skull = event.getView().getItem(skullSlot);
                     SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-                    election.vote(player, skullMeta.getOwner());
+                    election.voteFor(player, skullMeta.getOwner());
                     XSound.ENTITY_CHICKEN_EGG.play(player);
                     player.openInventory(voteInventory.getInventory(player));
                 }

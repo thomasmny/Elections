@@ -1,7 +1,24 @@
-package com.eintosti.elections.util;
+/*
+ * Copyright (c) 2018-2024, Thomas Meaney
+ * Copyright (c) contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package de.eintosti.elections.util;
 
+import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XMaterial;
-import com.eintosti.elections.util.external.ItemSkulls;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -13,7 +30,11 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.Arrays;
 import java.util.List;
 
-public class InventoryUtils {
+public final class InventoryUtils {
+
+    private InventoryUtils() {
+        throw new IllegalStateException("This is a utility class");
+    }
 
     public static ItemStack getItemStack(XMaterial material, String displayName, List<String> lore) {
         ItemStack itemStack = material.parseItem();
@@ -50,42 +71,30 @@ public class InventoryUtils {
         addItemStack(inventory, position, XMaterial.BLACK_STAINED_GLASS_PANE, "§7");
     }
 
-    @SuppressWarnings("deprecation")
-    public static ItemStack getSkull(String displayName, String skullOwner, List<String> lore) {
+    public static ItemStack getSkull(String displayName, String identifier, List<String> lore) {
         ItemStack skull = XMaterial.PLAYER_HEAD.parseItem();
-        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-
-        skullMeta.setOwner(skullOwner);
-        skullMeta.setDisplayName(displayName);
-        skullMeta.setLore(lore);
-        skull.setItemMeta(skullMeta);
-
-        skull.setItemMeta(skullMeta);
-        return skull;
-    }
-
-    public static void addSkull(Inventory inventory, int position, String displayName, String skullOwner, List<String> lore) {
-        inventory.setItem(position, getSkull(displayName, skullOwner, lore));
-    }
-
-    public static ItemStack getUrlSkull(String displayName, String url, List<String> lore) {
-        ItemStack skull = ItemSkulls.getSkull(url);
-        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        SkullMeta skullMeta = SkullUtils.applySkin(skull.getItemMeta(), identifier).clone();
 
         skullMeta.setDisplayName(displayName);
-        skullMeta.setLore(lore);
+        if (!lore.isEmpty()) {
+            skullMeta.setLore(lore);
+        }
         skullMeta.addItemFlags(ItemFlag.values());
         skull.setItemMeta(skullMeta);
 
         return skull;
     }
 
-    public static void addUrlSkull(Inventory inventory, int position, String displayName, String url, List<String> lore) {
-        inventory.setItem(position, getUrlSkull(displayName, url, lore));
+    public static ItemStack getSkull(String displayName, String identifier, String... lore) {
+        return getSkull(displayName, identifier, Arrays.asList(lore));
     }
 
-    public static void addUrlSkull(Inventory inventory, int position, String displayName, String url, String... lore) {
-        addUrlSkull(inventory, position, displayName, url, Arrays.asList(lore));
+    public static void addSkull(Inventory inventory, int position, String displayName, String identifier, String... lore) {
+        inventory.setItem(position, getSkull(displayName, identifier, lore));
+    }
+
+    public static void addSkull(Inventory inventory, int position, String displayName, String identifier, List<String> lore) {
+        inventory.setItem(position, getSkull(displayName, identifier, lore));
     }
 
     /**
@@ -96,7 +105,7 @@ public class InventoryUtils {
      * @param inventoryName The name of the inventory to compare with
      * @return {@code true} if the above is true, {@code false} otherwise
      */
-    public static boolean checkIfValidClick(InventoryClickEvent event, String inventoryName) {
+    public static boolean isValidClick(InventoryClickEvent event, String inventoryName) {
         if (!event.getView().getTitle().equals(inventoryName)) {
             return false;
         }

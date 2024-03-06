@@ -17,20 +17,53 @@
  */
 package de.eintosti.elections.command.subcommand;
 
+import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
+import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.command.SubCommand;
+import de.eintosti.elections.messages.Messages;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 
-public class CancelSubCommand implements SubCommand {
+import java.util.Arrays;
+
+public class CommandSubCommand implements SubCommand {
 
     private final ElectionsPlugin plugin;
 
-    public CancelSubCommand(ElectionsPlugin plugin) {
+    public CommandSubCommand(ElectionsPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public void execute(Player player, String[] args) {
+        if (!player.hasPermission("elections.command")) {
+            Messages.sendMessage(player, "election.finish_command.no_permission");
+            return;
+        }
 
+        if (args.length == 0) {
+            Messages.sendMessage(player, "election.finish_command.usage");
+            return;
+        }
+
+        Election election = plugin.getElection();
+        switch (election.getPhase().getPhaseType()) {
+            case SETUP:
+            case FINISHED:
+                // Continue below
+                break;
+            default:
+                Messages.sendMessage(player, "election.finish_command.already_started");
+                return;
+        }
+
+        String command = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        election.getSettings().finishCommands().get().add(command);
+
+        XSound.ENTITY_PLAYER_LEVELUP.play(player);
+        Messages.sendMessage(player, "election.finish_command.added",
+                Placeholder.unparsed("command", command)
+        );
     }
 }

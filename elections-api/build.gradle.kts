@@ -1,19 +1,59 @@
+applyCommonConfiguration()
+
+project.description = "API"
+
 plugins {
-    id("java")
-}
-
-group = "com.eintosti"
-version = "3.0.0"
-
-repositories {
-    mavenCentral()
+    `java-library`
+    `maven-publish`
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    compileOnly(libs.spigot)
+    compileOnly(libs.annotations)
 }
 
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks {
+    withType<Javadoc> {
+        title = "Elections API (v" + project.version + ")"
+        val opt = options as StandardJavadocDocletOptions
+        opt.overview("javadoc/overview.html")
+        opt.encoding("UTF-8")
+        opt.charSet("UTF-8")
+        opt.links("https://docs.oracle.com/javase/8/docs/api/")
+        opt.links("https://hub.spigotmc.org/javadocs/spigot/")
+        opt.links("https://javadoc.io/static/org.jetbrains/annotations/24.0.1/")
+        opt.isLinkSource = true
+        opt.isUse = true
+        opt.keyWords()
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "Elections"
+            url = if (project.version.toString().endsWith("-SNAPSHOT")) {
+                uri("https://repo.eintosti.de/snapshots")
+            } else {
+                uri("https://repo.eintosti.de/releases")
+            }
+            credentials(PasswordCredentials::class)
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "de.eintosti"
+            artifactId = "elections-api"
+            version = project.version.toString()
+            from(components["java"])
+        }
+    }
 }

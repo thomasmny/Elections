@@ -2,7 +2,7 @@ name: Elections
 version: ${version}
 api-version: 1.13
 author: einTosti
-main: com.eintosti.elections.Elections
+main: de.eintosti.elections.Elections
 description: §a§o» §f§oThe easiest way to create Elections!
 
 commands:

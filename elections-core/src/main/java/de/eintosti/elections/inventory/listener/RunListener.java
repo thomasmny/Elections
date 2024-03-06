@@ -22,7 +22,10 @@ import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.settings.Settings;
 import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.InventoryUtils;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.wesjd.anvilgui.AnvilGUI;
 import net.wesjd.anvilgui.AnvilGUI.ResponseAction;
 import org.bukkit.entity.Player;
@@ -30,23 +33,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
-import java.util.Map.Entry;
 
-public class NominationListener implements Listener {
+public class RunListener implements Listener {
 
     private final ElectionImpl election;
     private final Settings settings;
 
-    public NominationListener(ElectionsPlugin plugin) {
+    public RunListener(ElectionsPlugin plugin) {
         this.election = plugin.getElection();
         this.settings = election.getSettings();
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!InventoryUtils.isValidClick(event, MessagesOld.getString("nominate_title"))) {
+        if (!InventoryUtils.isValidClick(event, Messages.getString("run.title"))) {
             return;
         }
 
@@ -60,7 +61,7 @@ public class NominationListener implements Listener {
             case 10:
                 if (!election.isNominated(candidate.getUniqueId())) {
                     player.closeInventory();
-                    MessagesOld.sendMessage(player, "nomination_status_notNominated");
+                    Messages.sendMessage(player, "election.nomination.status.not_nominated");
                     XSound.ENTITY_ITEM_BREAK.play(player);
                     return;
                 }
@@ -72,18 +73,18 @@ public class NominationListener implements Listener {
                 if (candidate.getStatus() != null) {
                     candidate.setStatus(null);
                     player.closeInventory();
-                    MessagesOld.sendMessage(player, "nomination_status_resetStatus");
+                    Messages.sendMessage(player, "election.nomination.status.reset");
                 }
                 break;
 
             case 16:
-                Entry<String, Object> placeholder = new SimpleEntry<>("%position%", settings.position().get());
+                TagResolver position = Placeholder.unparsed("position", settings.position().get());
                 if (election.isNominated(candidate.getUniqueId())) {
                     election.removeNomination(candidate);
-                    MessagesOld.sendMessage(player, "run_stopRunning", placeholder);
+                    Messages.sendMessage(player, "election.run.stop", position);
                 } else {
                     election.addNomination(candidate);
-                    MessagesOld.sendMessage(player, "run_startRunning", placeholder);
+                    Messages.sendMessage(player, "election.run.start", position);
                 }
                 player.closeInventory();
                 XSound.ENTITY_CHICKEN_EGG.play(player);
@@ -103,7 +104,9 @@ public class NominationListener implements Listener {
 
                     Player player = stateSnapshot.getPlayer();
                     XSound.ENTITY_PLAYER_LEVELUP.play(player);
-                    MessagesOld.sendMessage(player, "nomination_status_statusSet", new SimpleEntry<>("%status%", status));
+                    Messages.sendMessage(player, "election.nomination.status.set",
+                            Placeholder.unparsed("status", status)
+                    );
                     return Collections.singletonList(ResponseAction.close());
                 })
                 .text("Max. length: " + maxLength)

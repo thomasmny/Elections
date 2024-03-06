@@ -1,19 +1,32 @@
-package com.eintosti.elections.election.phase;
+/*
+ * Copyright (c) 2018-2024, Thomas Meaney
+ * Copyright (c) contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package de.eintosti.elections.election.phase;
 
 import com.cryptomorin.xseries.XSound;
-import com.eintosti.elections.ElectionsPlugin;
-import com.eintosti.elections.api.election.settings.SettingsPhase;
-import com.eintosti.elections.election.ElectionImpl;
-import com.eintosti.elections.election.ElectionSettings;
-import com.eintosti.elections.util.Messages;
+import de.eintosti.elections.ElectionsPlugin;
+import de.eintosti.elections.api.election.phase.PhaseType;
+import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.election.ElectionSettings;
+import de.eintosti.elections.messages.Messages;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map.Entry;
 
 public class VotingPhase extends ScoreboardPhase {
 
@@ -22,18 +35,11 @@ public class VotingPhase extends ScoreboardPhase {
     private final ElectionSettings settings;
 
     public VotingPhase(ElectionsPlugin plugin) {
-        super(plugin.getElection(), SettingsPhase.VOTING, getPlaceholders());
+        super(plugin.getElection(), PhaseType.VOTING);
 
         this.plugin = plugin;
         this.election = plugin.getElection();
         this.settings = election.getSettings();
-    }
-
-    private static List<Entry<String, String>> getPlaceholders() {
-        return Arrays.asList(
-                new SimpleEntry<>("%phase%", Messages.getString("scoreboard_phase_voting")),
-                new SimpleEntry<>("%time%", "XX:XX:XX")
-        );
     }
 
     @Override
@@ -48,22 +54,24 @@ public class VotingPhase extends ScoreboardPhase {
         if (election.getNominations().isEmpty()) {
             election.prematureStop();
             Bukkit.getOnlinePlayers().forEach(pl -> {
-                Messages.sendMessage(pl, "voting_noPlayers");
+                Messages.sendMessage(pl, "election.voting.no_players");
                 XSound.ENTITY_ENDER_DRAGON_DEATH.play(pl);
             });
             return;
         }
 
         Bukkit.getOnlinePlayers().forEach(pl -> {
-            if (pl.getOpenInventory().getTitle().equals(Messages.getString("nominate_title"))) {
+            if (pl.getOpenInventory().getTitle().equals(Messages.getString("run.title"))) {
                 pl.closeInventory();
             }
 
-            if (settings.isTitle(super.getSettingsPhase())) {
-                pl.sendTitle(Messages.getString("voting_title"), Messages.getString("voting_subtitle"));
-            }
-            Messages.sendMessage(pl, "voting_start", new SimpleEntry<>("%position%", settings.getPosition()));
             XSound.ENTITY_FIREWORK_ROCKET_LAUNCH.play(pl);
+            Messages.sendMessage(pl, "election.voting.started",
+                    Placeholder.unparsed("position", settings.position().get())
+            );
+            if (settings.title(super.getPhaseType()).get()) {
+                Messages.sendTitle(pl, "election.voting.title", "election.voting.subtitle");
+            }
         });
     }
 
@@ -74,12 +82,14 @@ public class VotingPhase extends ScoreboardPhase {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!settings.isNotification(super.getSettingsPhase())) {
+        if (!settings.notification(super.getPhaseType()).get()) {
             return;
         }
 
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            Messages.sendMessage(event.getPlayer(), "voting_start", new SimpleEntry<>("%position%", settings.getPosition()));
+            Messages.sendMessage(event.getPlayer(), "election.voting.started",
+                    Placeholder.unparsed("position", settings.position().get())
+            );
         }, 1L);
     }
 }

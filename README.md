@@ -1,4 +1,4 @@
-# Elections ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/einTosti/Elections/Build%20main/master) ![version](https://img.shields.io/github/v/release/einTosti/Elections) [![Discord](https://img.shields.io/discord/419460301403193344.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/Nt467Rf)
+# Elections ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/thomasmny/Elections/Build%20main/master) ![version](https://img.shields.io/github/v/release/thomasmny/Elections) [![Discord](https://img.shields.io/discord/419460301403193344.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/Nt467Rf)
 
 ![Screenshot](.github/images/elections_header.png)
 
@@ -6,7 +6,7 @@
 
 **Elections** is a simple plugin that lets you create elections. Modify the election settings, till your happy and then
 the plugin does the rest for you! In these elections, you can nominate yourself, vote for other players and find out who
-the best player truly is.​
+the best player truly is.
 
 ## Features
 
@@ -54,13 +54,13 @@ the best player truly is.​
 
 ## Permissions
 
-| **Permission** | **Default** |
-|---|---|
-| `elections.create` | *op* | 
-| `elections.cancel` | *op* | 
-| `elections.run` | *true* | 
-| `elections.skipstage` | *op* | 
-| `elections.vote` | *true* | 
+| **Permission**        | **Default** |
+|-----------------------|-------------|
+| `elections.create`    | *op*        | 
+| `elections.cancel`    | *op*        | 
+| `elections.run`       | *true*      | 
+| `elections.skipstage` | *op*        | 
+| `elections.vote`      | *true*      | 
 
 ## Setup
 
@@ -72,12 +72,47 @@ the best player truly is.​
 4. If a file called "elections.data" is created, just ignore this. (It's required to resume the election after the
    server stops/restarts)
 
-### Ingame
+### In-game
 
 1. Create an election with `/elections create`
 2. During the **Nomination Phase**, all players (with permission) can nominate themselves with `/election run`
 3. After the Nomination Phase (in the **Voting Phase**), all players (with permission) can vote for their favourite
    player with `/elections vote
+
+## Developer API
+
+**Maven:**
+
+```xml
+
+<repository>
+  <id>eintosti-releases</id>
+  <url>https://repo.eintosti.de/releases</url>
+</repository>
+```
+
+```xml
+
+<dependency>
+  <groupId>de.eintosti</groupId>
+  <artifactId>elections-api</artifactId>
+  <version>version</version>
+</dependency>
+ ```
+
+**Or alternatively, with Gradle:**
+
+```kotlin
+repositories {
+  maven {
+    url = uri("https://repo.eintosti.de/releases")
+  }
+}
+
+dependencies {
+  compileOnly("de.eintosti:buildsystem-api:version")
+}
+```
 
 ## Contributing
 
@@ -110,4 +145,4 @@ that come with them.
 
 ## License
 
-This project is licensed under the [BSD 4-Clause License](LICENSE).
+This project is licensed under the [GNU General Public License v3.0](LICENSE.txt).

@@ -19,32 +19,38 @@ package de.eintosti.elections.command.subcommand;
 
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
+import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.command.SubCommand;
-import de.eintosti.elections.inventory.CreationInventory.Page;
 import de.eintosti.elections.messages.Messages;
 import org.bukkit.entity.Player;
 
-public class CreateSubCommand implements SubCommand {
+public class CancelSubCommand implements SubCommand {
 
     private final ElectionsPlugin plugin;
 
-    public CreateSubCommand(ElectionsPlugin plugin) {
+    public CancelSubCommand(ElectionsPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public void execute(Player player, String[] args) {
-        if (!player.hasPermission("elections.start")) {
-            Messages.sendMessage(player, "election.start.no_permission");
+        if (!player.hasPermission("elections.cancel")) {
+            Messages.sendMessage(player, "election.vote.no_permission");
             return;
         }
 
-        if (plugin.getElection().isActive()) {
-            Messages.sendMessage(player, "election.start.already_started");
-            return;
+        Election election = plugin.getElection();
+        switch (election.getPhase().getPhaseType()) {
+            case VOTING:
+            case NOMINATION:
+                // Continue below
+                break;
+            default:
+                Messages.sendMessage(player, "election.cancel.not_started");
+                return;
         }
 
-        XSound.BLOCK_CHEST_OPEN.play(player);
-        player.openInventory(plugin.getCreationInventory().getInventory(Page.GENERAL));
+        XSound.ENTITY_ITEM_BREAK.play(player);
+        election.cancelElection();
     }
 }

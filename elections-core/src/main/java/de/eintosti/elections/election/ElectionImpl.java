@@ -1,12 +1,31 @@
-package com.eintosti.elections.election;
+/*
+ * Copyright (c) 2018-2024, Thomas Meaney
+ * Copyright (c) contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package de.eintosti.elections.election;
 
-import com.eintosti.elections.ElectionsPlugin;
-import com.eintosti.elections.api.election.Election;
-import com.eintosti.elections.api.election.candidate.Candidate;
-import com.eintosti.elections.api.election.settings.SettingsPhase;
-import com.eintosti.elections.election.candidate.ElectionCandidate;
-import com.eintosti.elections.election.phase.AbstractPhase;
-import com.eintosti.elections.election.phase.SetupPhase;
+import com.cryptomorin.xseries.XSound;
+import de.eintosti.elections.ElectionsPlugin;
+import de.eintosti.elections.api.election.Election;
+import de.eintosti.elections.api.election.candidate.Candidate;
+import de.eintosti.elections.api.election.phase.PhaseType;
+import de.eintosti.elections.election.candidate.ElectionCandidate;
+import de.eintosti.elections.election.phase.AbstractPhase;
+import de.eintosti.elections.election.phase.SetupPhase;
+import de.eintosti.elections.messages.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,9 +34,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ElectionImpl implements Election {
 
@@ -39,7 +59,6 @@ public class ElectionImpl implements Election {
         this.candidateVoteCount = new HashMap<>();
 
         this.phase = new SetupPhase(plugin);
-        Bukkit.broadcastMessage("§a§l*** Init Election");
     }
 
     public JavaPlugin getPlugin() {
@@ -57,8 +76,13 @@ public class ElectionImpl implements Election {
     }
 
     @Override
+    public boolean isActive() {
+        return phase.getPhaseType() == PhaseType.NOMINATION || phase.getPhaseType() == PhaseType.VOTING;
+    }
+
+    @Override
     public void start() {
-        if (phase != null && phase.getSettingsPhase() != SettingsPhase.SETUP) {
+        if (phase != null && phase.getPhaseType() != PhaseType.SETUP) {
             phase.finish();
         }
         phase = new SetupPhase(plugin);
@@ -75,18 +99,22 @@ public class ElectionImpl implements Election {
         }
     }
 
+    @Override
+    public void cancelElection() {
+        prematureStop();
+
+        Bukkit.getOnlinePlayers().forEach(pl -> {
+            Messages.sendMessage(pl, "election.cancel.success");
+            XSound.ENTITY_ITEM_BREAK.play(pl);
+        });
+    }
+
+    /**
+     * Stops the Election before the {@link PhaseType#FINISHED} phase has been completed.
+     */
     public void prematureStop() {
         phase.finish();
         plugin.resetElection();
-    }
-
-    @Override
-    public boolean isActive() {
-        return phase.getSettingsPhase() == SettingsPhase.NOMINATION || phase.getSettingsPhase() == SettingsPhase.VOTING;
-    }
-
-    public Candidate getOrCreateCandidate(Player player) {
-        return nominations.getOrDefault(player.getUniqueId(), new ElectionCandidate(player.getUniqueId(), player.getName()));
     }
 
     @Override
@@ -102,6 +130,10 @@ public class ElectionImpl implements Election {
                 .filter(candidate -> candidate.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public Candidate getOrCreateCandidate(Player player) {
+        return nominations.getOrDefault(player.getUniqueId(), new ElectionCandidate(player.getUniqueId(), player.getName()));
     }
 
     @Override
@@ -133,7 +165,7 @@ public class ElectionImpl implements Election {
     }
 
     @Override
-    public boolean hasVoted(Player player, @NotNull Candidate candidate) {
+    public boolean hasVotedFor(Player player, @NotNull Candidate candidate) {
         Candidate vote = getVote(player);
         if (vote == null) {
             return false;
@@ -142,7 +174,7 @@ public class ElectionImpl implements Election {
     }
 
     @Override
-    public void vote(Player voter, String candidateName) {
+    public void voteFor(Player voter, String candidateName) {
         Candidate candidate = getCandidate(candidateName);
         if (candidate == null) {
             plugin.getLogger().severe("Invalid candidate: " + candidateName);
@@ -171,20 +203,18 @@ public class ElectionImpl implements Election {
     }
 
     @Override
-    public Map<UUID, Integer> getCandidateVoteCount() {
+    public Map<UUID, Integer> getCandidateVotes() {
         return candidateVoteCount;
     }
 
     @Override
-    public LinkedList<Candidate> getTop5() {
-        LinkedList<Candidate> result = new LinkedList<>();
-
-        candidateVoteCount.entrySet()
+    public List<Candidate> getTopFive() {
+        return candidateVoteCount.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(5)
-                .forEachOrdered(entry -> result.add(getCandidate(entry.getKey())));
+                .map(entry -> getCandidate(entry.getKey()))
+                .collect(Collectors.toList());
 
-        return result;
     }
 }

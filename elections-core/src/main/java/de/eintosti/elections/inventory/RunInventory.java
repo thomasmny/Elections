@@ -23,10 +23,12 @@ import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.election.settings.Settings;
 import de.eintosti.elections.election.ElectionImpl;
-import de.eintosti.elections.inventory.listener.NominationListener;
+import de.eintosti.elections.inventory.listener.RunListener;
 import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.InventoryUtils;
 import de.eintosti.elections.util.external.StringUtils;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -34,72 +36,68 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
-public class NominationInventory {
+public class RunInventory {
 
     private final ElectionImpl election;
     private final Settings settings;
 
     private BukkitTask timeLeftTask;
 
-    public NominationInventory(ElectionsPlugin plugin) {
+    public RunInventory(ElectionsPlugin plugin) {
         this.election = plugin.getElection();
         this.settings = election.getSettings();
 
-        Bukkit.getPluginManager().registerEvents(new NominationListener(plugin), plugin);
+        Bukkit.getPluginManager().registerEvents(new RunListener(plugin), plugin);
     }
 
     public Inventory getInventory(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 27, Messages.getString("nomination.title"));
-        Candidate candidate = election.getOrCreateCandidate(player);
+        Inventory inventory = Bukkit.createInventory(null, 27, Messages.getString("run.title"));
         addBorder(inventory);
 
-        addStatusItemStack(candidate, inventory);
-        InventoryUtils.addItemStack(inventory, 11, XMaterial.ANVIL, Messages.getString("nominate_resetStatus_name"), MessagesOld.getStringList("nominate_resetStatus_lore"));
-
+        Candidate candidate = election.getOrCreateCandidate(player);
+        addStatusItem(candidate, inventory);
+        addResetStatusItem(inventory);
         addCurrentStatus(candidate, inventory);
         addElectionRunItem(candidate, inventory);
 
         return inventory;
     }
 
-    private void addStatusItemStack(Candidate candidate, Inventory inventory) {
-        String displayName = Messages.getString("nominate_cannotSetStatus_name");
-        List<String> lore = Messages.getStringList("nominate_cannotSetStatus_lore");
-
-        if (election.isNominated(candidate.getUniqueId())) {
-            displayName = Messages.getString("nominate_canSetStatus_name");
-            lore = Messages.getStringList("nominate_canSetStatus_lore");
-        }
-
-        InventoryUtils.addItemStack(inventory, 10, XMaterial.WRITABLE_BOOK, displayName, lore);
+    private void addStatusItem(Candidate candidate, Inventory inventory) {
+        String key = election.isNominated(candidate.getUniqueId()) ? "enabled" : "disabled";
+        InventoryUtils.addItemStack(inventory, 10, XMaterial.WRITABLE_BOOK,
+                Messages.getString("run.status." + key + ".title"),
+                Messages.getStringList("run.status." + key + ".lore")
+        );
     }
 
-    private void addCurrentStatus(Candidate candidate, Inventory inv) {
+    private void addResetStatusItem(Inventory inventory) {
+        InventoryUtils.addItemStack(inventory, 11, XMaterial.ANVIL,
+                Messages.getString("run.status.reset.title"), Messages.getStringList("run.status.reset.lore")
+        );
+    }
+
+    private void addCurrentStatus(Candidate candidate, Inventory inventory) {
         String status = candidate.getStatus();
         String formattedStatus = status == null ? " §c-" : " §a§o" + status;
-
-        InventoryUtils.addItemStack(inv, 13, XMaterial.NAME_TAG, Messages.getString("nominate_currentStatus_name") + formattedStatus);
+        InventoryUtils.addItemStack(inventory, 13, XMaterial.NAME_TAG,
+                Messages.getString("run.status.current", Placeholder.unparsed("status", formattedStatus))
+        );
     }
 
-    private void addElectionRunItem(Candidate candidate, Inventory inv) {
-        Entry<String, Object> placeholder = new SimpleEntry<>("%position%", settings.position().get());
+    private void addElectionRunItem(Candidate candidate, Inventory inventory) {
+        boolean nominated = election.isNominated(candidate.getUniqueId());
+        String key = nominated ? "running" : "notrunning";
+        TagResolver position = Placeholder.unparsed("position", settings.position().get());
 
-        String displayName = Messages.getString("nominate_running_name", placeholder);
-        List<String> lore = Messages.getStringList("nominate_running_lore", placeholder);
-        XMaterial material = XMaterial.LIME_DYE;
-
-        if (!election.isNominated(candidate.getUniqueId())) {
-            displayName = Messages.getString("nominate_notRunning_name", placeholder);
-            lore = Messages.getStringList("nominate_notRunning_lore", placeholder);
-            material = XMaterial.RED_DYE;
-        }
-
-        InventoryUtils.addItemStack(inv, 16, material, displayName, lore);
+        InventoryUtils.addItemStack(inventory, 16,
+                nominated ? XMaterial.LIME_DYE : XMaterial.RED_DYE,
+                Messages.getString("run." + key + ".name", position),
+                Messages.getStringList("run." + key + ".lore", position)
+        );
     }
 
     private void addBorder(Inventory inventory) {
@@ -125,14 +123,16 @@ public class NominationInventory {
     private void addTimeLeftItem(Inventory inventory) {
         ItemStack itemStack = XMaterial.BOOK.parseItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(Messages.getString("nominate_time_remaining"));
+        itemMeta.setDisplayName(Messages.getString("run.time.remaining.title"));
 
         List<String> lore = new ArrayList<>();
         int countdown = settings.countdown(PhaseType.NOMINATION).get();
         if (countdown > 0) {
-            lore.add(" §a" + StringUtils.formatTime(countdown));
+            lore.add(Messages.getString("run.time.remaining.duration",
+                    Placeholder.unparsed("duration", StringUtils.formatTime(countdown))
+            ));
         } else {
-            lore.add(Messages.getString("nominate_time_finished"));
+            lore.add(Messages.getString("run.time.remaining.finished"));
         }
 
         itemMeta.setLore(lore);

@@ -15,9 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package de.eintosti.elections.command;
+package de.eintosti.elections.command.tabcomplete;
 
 public interface Argument {
 
+    /**
+     * Gets the name of the argument.
+     *
+     * @return The name of the argument
+     */
     String getName();
 }

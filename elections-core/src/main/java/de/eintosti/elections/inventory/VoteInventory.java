@@ -1,15 +1,33 @@
-package com.eintosti.elections.inventory;
+/*
+ * Copyright (c) 2018-2024, Thomas Meaney
+ * Copyright (c) contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package de.eintosti.elections.inventory;
 
 import com.cryptomorin.xseries.XMaterial;
-import com.eintosti.elections.ElectionsPlugin;
-import com.eintosti.elections.api.election.candidate.Candidate;
-import com.eintosti.elections.api.election.settings.SettingsPhase;
-import com.eintosti.elections.election.ElectionImpl;
-import com.eintosti.elections.election.ElectionSettings;
-import com.eintosti.elections.inventory.listener.VoteListener;
-import com.eintosti.elections.util.InventoryUtils;
-import com.eintosti.elections.util.Messages;
-import com.eintosti.elections.util.external.StringUtils;
+import de.eintosti.elections.ElectionsPlugin;
+import de.eintosti.elections.api.election.candidate.Candidate;
+import de.eintosti.elections.api.election.phase.PhaseType;
+import de.eintosti.elections.api.election.settings.Settings;
+import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.inventory.listener.VoteListener;
+import de.eintosti.elections.messages.Messages;
+import de.eintosti.elections.util.InventoryUtils;
+import de.eintosti.elections.util.external.StringUtils;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -18,7 +36,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -27,7 +44,7 @@ public class VoteInventory extends PaginatedInventory {
     private static final int MAX_CANDIDATES = 9;
 
     private final ElectionImpl election;
-    private final ElectionSettings settings;
+    private final Settings settings;
 
     private BukkitTask timeLeftTask;
     private int numCandidates = 0;
@@ -40,8 +57,8 @@ public class VoteInventory extends PaginatedInventory {
     }
 
     private Inventory createInventory(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 36, Messages.getString("vote_title"));
-        fillGuiWithGlass(inventory, player);
+        Inventory inventory = Bukkit.createInventory(null, 36, Messages.getString("vote.title"));
+        addBorder(inventory, player);
         return inventory;
     }
 
@@ -76,13 +93,13 @@ public class VoteInventory extends PaginatedInventory {
     }
 
     private void addCandidateInformation(Player player, Candidate candidate, Inventory inventory, int position) {
-        String displayName = Messages.getString("vote_player_notVoted");
-        List<String> status = candidate.hasStatus() ? Collections.singletonList("§a§o\"" + candidate.getStatus() + "\"") : new ArrayList<>();
+        String displayName = Messages.getString("vote.player.notvoted");
+        String status = candidate.hasStatus() ? "§a§o\"" + candidate.getStatus() + "\"" : "";
         XMaterial material = XMaterial.GRAY_DYE;
         String prefix = "§7";
 
-        if (election.hasVoted(player, candidate)) {
-            displayName = Messages.getString("vote_player_voted");
+        if (election.hasVotedFor(player, candidate)) {
+            displayName = Messages.getString("vote.player.voted");
             material = XMaterial.LIME_DYE;
             prefix = "§a";
         }
@@ -91,14 +108,14 @@ public class VoteInventory extends PaginatedInventory {
         InventoryUtils.addItemStack(inventory, position + 9, material, displayName);
     }
 
-    private void fillGuiWithGlass(Inventory inventory, Player player) {
+    private void addBorder(Inventory inventory, Player player) {
         for (int i = 0; i <= 9; i++) {
             InventoryUtils.addGlassPane(inventory, i);
         }
 
-        if (!settings.isScoreboard(SettingsPhase.VOTING)) {
+        if (!settings.scoreboard(PhaseType.VOTING).get()) {
             this.timeLeftTask = Bukkit.getScheduler().runTaskTimer(election.getPlugin(), () -> {
-                if (settings.getCountdown(SettingsPhase.VOTING) > 0) {
+                if (settings.countdown(PhaseType.VOTING).get() > 0) {
                     addTimeLeftItem(inventory);
                 } else {
                     this.timeLeftTask.cancel();
@@ -114,13 +131,17 @@ public class VoteInventory extends PaginatedInventory {
         int invIndex = getInvIndex(player);
 
         if (numOfPages > 1 && invIndex > 0) {
-            InventoryUtils.addUrlSkull(inventory, 27, Messages.getString("vote_previousPage"), "f7aacad193e2226971ed95302dba433438be4644fbab5ebf818054061667fbe2");
+            InventoryUtils.addSkull(inventory, 27, Messages.getString("vote.page.previous"),
+                    "f7aacad193e2226971ed95302dba433438be4644fbab5ebf818054061667fbe2"
+            );
         } else {
             InventoryUtils.addGlassPane(inventory, 27);
         }
 
         if (numOfPages > 1 && invIndex < (numOfPages - 1)) {
-            InventoryUtils.addUrlSkull(inventory, 35, Messages.getString("vote_nextPage"), "d34ef0638537222b20f480694dadc0f85fbe0759d581aa7fcdf2e43139377158");
+            InventoryUtils.addSkull(inventory, 35, Messages.getString("vote.page.next"),
+                    "d34ef0638537222b20f480694dadc0f85fbe0759d581aa7fcdf2e43139377158"
+            );
         } else {
             InventoryUtils.addGlassPane(inventory, 35);
         }
@@ -129,14 +150,16 @@ public class VoteInventory extends PaginatedInventory {
     private void addTimeLeftItem(Inventory inventory) {
         ItemStack itemStack = XMaterial.BOOK.parseItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(Messages.getString("vote_time_remaining"));
+        itemMeta.setDisplayName(Messages.getString("vote.time.remaining.title"));
 
         List<String> lore = new ArrayList<>();
-        int countdown = settings.getCountdown(SettingsPhase.VOTING);
+        int countdown = settings.countdown(PhaseType.NOMINATION).get();
         if (countdown > 0) {
-            lore.add(" §a" + StringUtils.formatTime(countdown));
+            lore.add(Messages.getString("vote.time.remaining.duration",
+                    Placeholder.unparsed("duration", StringUtils.formatTime(countdown))
+            ));
         } else {
-            lore.add(Messages.getString("vote_time_finished"));
+            lore.add(Messages.getString("vote.time.remaining.finished"));
         }
 
         itemMeta.setLore(lore);

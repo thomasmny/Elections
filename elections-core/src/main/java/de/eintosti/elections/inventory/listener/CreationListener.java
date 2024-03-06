@@ -22,10 +22,12 @@ import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.election.settings.Settings;
-import de.eintosti.elections.inventory.CreateInventory;
-import de.eintosti.elections.inventory.CreateInventory.Page;
-import de.eintosti.elections.messages.MessagesOld;
+import de.eintosti.elections.api.election.settings.Settings.Type;
+import de.eintosti.elections.inventory.CreationInventory;
+import de.eintosti.elections.inventory.CreationInventory.Page;
+import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.InventoryUtils;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.wesjd.anvilgui.AnvilGUI;
 import net.wesjd.anvilgui.AnvilGUI.ResponseAction;
 import org.bukkit.entity.Player;
@@ -33,17 +35,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.List;
 
-public class CreateListener implements Listener {
+public class CreationListener implements Listener {
 
     private final ElectionsPlugin plugin;
     private final Election election;
     private final Settings settings;
 
-    public CreateListener(ElectionsPlugin plugin) {
+    public CreationListener(ElectionsPlugin plugin) {
         this.plugin = plugin;
         this.election = plugin.getElection();
         this.settings = election.getSettings();
@@ -51,7 +52,7 @@ public class CreateListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!InventoryUtils.isValidClick(event, MessagesOld.getString("create_title"))) {
+        if (!InventoryUtils.isValidClick(event, Messages.getString("creation.title"))) {
             return;
         }
 
@@ -60,7 +61,7 @@ public class CreateListener implements Listener {
             return;
         }
 
-        CreateInventory createInventory = plugin.getCreateInventory();
+        CreationInventory createInventory = plugin.getCreationInventory();
         Page page = Page.matchPage(event.getInventory());
 
         switch (event.getSlot()) {
@@ -86,45 +87,22 @@ public class CreateListener implements Listener {
                         return;
 
                     case 22:
+                        Type<Boolean> maxCandidatesEnabled = settings.candidateLimitEnabled();
                         if (event.getClick().isShiftClick()) {
-                            settings.setMaxEnabled(!settings.isMaxEnabled());
+                            maxCandidatesEnabled.set(!maxCandidatesEnabled.get());
                             break;
                         }
 
-                        if (!settings.isMaxEnabled()) {
+                        if (!maxCandidatesEnabled.get()) {
                             XSound.ENTITY_ITEM_BREAK.play(player);
                             return;
                         }
 
-                        int maxCandidates = settings.getMaxCandidates();
-                        switch (event.getClick()) {
-                            case LEFT:
-                                if ((maxCandidates - 1) > 0) {
-                                    settings.setMaxCandidates(settings.getMaxCandidates() - 1);
-                                }
-                                break;
-                            case RIGHT:
-                                if ((maxCandidates + 1) < 64) {
-                                    settings.setMaxCandidates(settings.getMaxCandidates() + 1);
-                                }
-                                break;
-                        }
+                        modifyIntegerSetting(event, settings.maxCandidates());
                         break;
 
                     case 24:
-                        int statusLength = settings.getMaxStatusLength();
-                        switch (event.getClick()) {
-                            case LEFT:
-                                if ((statusLength - 1) > 0) {
-                                    settings.setMaxStatusLength(settings.getMaxStatusLength() - 1);
-                                }
-                                break;
-                            case RIGHT:
-                                if ((statusLength + 1) < 64) {
-                                    settings.setMaxStatusLength(settings.getMaxStatusLength() + 1);
-                                }
-                                break;
-                        }
+                        modifyIntegerSetting(event, settings.maxStatusLength());
                         break;
 
                     default:
@@ -146,16 +124,20 @@ public class CreateListener implements Listener {
                         XSound.ENTITY_CHICKEN_EGG.play(player);
                         return;
                     case 28:
-                        settings.setScoreboard(settingPhase, !settings.isScoreboard(settingPhase));
+                        Type<Boolean> scoreboard = settings.scoreboard(settingPhase);
+                        scoreboard.set(!scoreboard.get());
                         break;
                     case 29:
-                        settings.setActionbar(settingPhase, !settings.isActionbar(settingPhase));
+                        Type<Boolean> actionBar = settings.actionBar(settingPhase);
+                        actionBar.set(!actionBar.get());
                         break;
                     case 30:
-                        settings.setTitle(settingPhase, !settings.isTitle(settingPhase));
+                        Type<Boolean> title = settings.title(settingPhase);
+                        title.set(!title.get());
                         break;
                     case 31:
-                        settings.setNotification(settingPhase, !settings.isNotification(settingPhase));
+                        Type<Boolean> notification = settings.notification(settingPhase);
+                        notification.set(!notification.get());
                         break;
                     default:
                         return;
@@ -168,35 +150,40 @@ public class CreateListener implements Listener {
 
             case FINISH: {
                 if (event.getSlot() == 22) {
-                    if (event.getClick().isShiftClick()) {
-                        settings.setFinishCommand(!settings.isFinishCommand());
-                        player.openInventory(createInventory.getInventory(Page.FINISH));
-                        XSound.ENTITY_FISHING_BOBBER_RETRIEVE.play(player);
-                        return;
-                    }
-
-                    if (!settings.isFinishCommand()) {
-                        XSound.ENTITY_ITEM_BREAK.play(player);
-                        return;
-                    }
-
                     if (event.isLeftClick()) {
                         XSound.ENTITY_ITEM_PICKUP.play(player);
                         openCommandAnvil(player);
                     } else if (event.isRightClick()) {
-                        List<String> commands = settings.getFinishCommands();
-                        String lastCommand = commands.get(commands.size() - 1);
+                        List<String> finishCommands = settings.finishCommands().get();
+                        String lastCommand = finishCommands.get(finishCommands.size() - 1);
                         if (lastCommand == null) {
                             return;
                         }
 
-                        settings.getFinishCommands().remove(lastCommand);
+                        finishCommands.remove(lastCommand);
                         player.openInventory(createInventory.getInventory(Page.FINISH));
-                        MessagesOld.sendMessage(player, "command_removed", new SimpleEntry<>("%command%", lastCommand));
+                        Messages.sendMessage(player, "election.finish_command.removed",
+                                Placeholder.unparsed("command", lastCommand)
+                        );
                     }
                 }
                 break;
             }
+        }
+    }
+
+    private void modifyIntegerSetting(InventoryClickEvent event, Type<Integer> setting) {
+        switch (event.getClick()) {
+            case LEFT:
+                if ((setting.get() - 1) > 0) {
+                    setting.set(setting.get() - 1);
+                }
+                break;
+            case RIGHT:
+                if ((setting.get() + 1) < 64) {
+                    setting.set(setting.get() + 1);
+                }
+                break;
         }
     }
 
@@ -205,13 +192,15 @@ public class CreateListener implements Listener {
                 .onClick((slot, stateSnapshot) -> {
                     Player anvilPlayer = stateSnapshot.getPlayer();
                     String position = stateSnapshot.getText().trim();
-                    settings.setPosition(position);
+                    settings.position().set(position);
 
                     XSound.ENTITY_PLAYER_LEVELUP.play(anvilPlayer);
-                    MessagesOld.sendMessage(anvilPlayer, "position_set", new SimpleEntry<>("%position%", position));
+                    Messages.sendMessage(anvilPlayer, "election.position.set",
+                            Placeholder.unparsed("position", position)
+                    );
                     return Collections.singletonList(ResponseAction.close());
                 })
-                .text(settings.getPosition())
+                .text(settings.position().get())
                 .plugin(plugin)
                 .open(player);
     }
@@ -224,10 +213,12 @@ public class CreateListener implements Listener {
                     if (command.startsWith("/")) {
                         command = command.substring(1);
                     }
-                    settings.getFinishCommands().add(command);
+                    settings.finishCommands().get().add(command);
 
                     XSound.ENTITY_PLAYER_LEVELUP.play(anvilPlayer);
-                    MessagesOld.sendMessage(anvilPlayer, "command_added", new SimpleEntry<>("%command%", command));
+                    Messages.sendMessage(anvilPlayer, "election.finish_command.added",
+                            Placeholder.unparsed("command", command)
+                    );
                     return Collections.singletonList(ResponseAction.close());
                 })
                 .text("Variable: %player%")

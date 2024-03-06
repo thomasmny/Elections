@@ -1,19 +1,61 @@
+applyCommonConfiguration()
+
+project.description = "Core"
+
 plugins {
-    id("java")
+    `java-library`
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-group = "com.eintosti"
-version = "3.0.0"
-
 repositories {
-    mavenCentral()
+    maven {
+        name = "AuthLib"
+        url = uri("https://libraries.minecraft.net/")
+    }
+    maven {
+        name = "AnvilGUI"
+        url = uri("https://repo.codemc.io/repository/maven-snapshots/")
+    }
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    api(project(":elections-api"))
+
+    compileOnly(libs.spigot)
+    compileOnly(libs.authlib)
+    compileOnly(libs.annotations)
+
+    api(libs.anvilgui)
+    api(libs.fastboard)
+
+    implementation(libs.adventure.api)
+    implementation(libs.adventure.minimessage)
+    implementation(libs.adventure.platform)
+    implementation(libs.xseries)
 }
 
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
+tasks {
+    assemble {
+        dependsOn(shadowJar)
+    }
+
+    shadowJar {
+        minimize()
+        archiveFileName.set("${rootProject.name}-${project.version}.jar")
+
+        val shadePath = "de.eintosti.elections.util.external"
+        relocate("net.wesjd.anvilgui", "$shadePath.anvilgui")
+        relocate("fr.mrmicky.fastboard", "$shadePath.fastboard")
+        relocate("com.cryptomorin.xseries", "$shadePath.xseries")
+        relocate("net.kyori.adventure", "$shadePath.adventure")
+    }
+
+    processResources {
+        from(sourceSets.main.get().resources.srcDirs) {
+            filesMatching("plugin.yml") {
+                expand("version" to project.version)
+            }
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+    }
 }

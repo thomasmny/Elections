@@ -21,110 +21,143 @@ import com.cryptomorin.xseries.XMaterial;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.election.settings.Settings;
-import de.eintosti.elections.inventory.listener.CreateListener;
-import de.eintosti.elections.messages.MessagesOld;
+import de.eintosti.elections.api.election.settings.Settings.Type;
+import de.eintosti.elections.inventory.listener.CreationListener;
+import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.InventoryUtils;
 import de.eintosti.elections.util.external.StringUtils;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.List;
 
-public class CreateInventory {
+public class CreationInventory {
 
     private final Settings settings;
 
-    public CreateInventory(ElectionsPlugin plugin) {
+    public CreationInventory(ElectionsPlugin plugin) {
         this.settings = plugin.getElection().getSettings();
 
-        Bukkit.getPluginManager().registerEvents(new CreateListener(plugin), plugin);
+        Bukkit.getPluginManager().registerEvents(new CreationListener(plugin), plugin);
     }
 
     public Inventory getInventory(Page page) {
-        Inventory inventory = Bukkit.createInventory(null, 54, MessagesOld.getString("create_title"));
+        Inventory inventory = Bukkit.createInventory(null, 54, Messages.getString("creation.title"));
 
-        InventoryUtils.addItemStack(inventory, 4, XMaterial.BOOK, MessagesOld.getString("create_startElection"));
+        InventoryUtils.addItemStack(inventory, 4, XMaterial.BOOK, Messages.getString("creation.election.start"));
         page.addCurrentPageMarkers(inventory);
 
         switch (page) {
             case GENERAL:
                 InventoryUtils.addItemStack(
-                        inventory, 20, XMaterial.OAK_SIGN, MessagesOld.getString("create_page1_position"),
-                        MessagesOld.getStringList("create_page1_position_lore", new SimpleEntry<>("%position%", settings.getPosition()))
+                        inventory, 20, XMaterial.OAK_SIGN,
+                        Messages.getString("creation.position.title"),
+                        Messages.getStringList("creation.position.lore",
+                                Placeholder.unparsed("position", settings.position().get())
+                        )
                 );
                 addMaxPlayers(inventory);
-                InventoryUtils.addEnchantedItemStack(inventory, 24, XMaterial.NAME_TAG, settings.getMaxStatusLength(), MessagesOld.getString("create_page1_statusLength"), false, MessagesOld.getStringList("create_page1_statusLength_lore"));
+                InventoryUtils.addEnchantedItemStack(inventory, 24, XMaterial.NAME_TAG, settings.maxStatusLength().get(),
+                        Messages.getString("creation.status_length.title"), false, Messages.getStringList("creation.status_length.lore")
+                );
                 break;
 
             case NOMINATION:
             case VOTING:
-                InventoryUtils.addUrlSkull(inventory, 19, MessagesOld.getString("create_page2_3_scoreboard"), "27712ca655128701ea3e5f28ddd69e6a8e63adf28052c51b2fd5adb538e1", MessagesOld.getStringList("create_page2_3_scoreboard_lore"));
-                InventoryUtils.addUrlSkull(inventory, 20, MessagesOld.getString("create_page2_3_actionbar"), "c95d37993e594082678472bf9d86823413c250d4332a2c7d8c52de4976b362", MessagesOld.getStringList("create_page2_3_actionbar_lore"));
-                InventoryUtils.addUrlSkull(inventory, 21, MessagesOld.getString("create_page2_3_titles"), "97e56140686e476aef5520acbabc239535ff97e24b14d87f4982f13675c", MessagesOld.getStringList("create_page2_3_titles_lore"));
-                InventoryUtils.addUrlSkull(inventory, 22, MessagesOld.getString("create_page2_3_notifications"), "2ab5de74bb367e4a55a84a8843e05e94664af551a4b99cdf410436f0e444", MessagesOld.getStringList("create_page2_3_notifications_lore"));
+                PhaseType phaseKey = page.getPhase();
 
-                PhaseType phase = page.getPhase();
-                int pageNum = phase == PhaseType.NOMINATION ? 2 : 3;
-                String messageKey = "create_page" + pageNum + "_" + phase.name().toLowerCase() + "Length";
+                InventoryUtils.addSkull(inventory, 19,
+                        Messages.getString("creation.scoreboard.title"),
+                        "27712ca655128701ea3e5f28ddd69e6a8e63adf28052c51b2fd5adb538e1",
+                        Messages.getStringList("creation.scoreboard.lore")
+                );
+                addSettingsToggle(inventory, 28, settings.scoreboard(phaseKey));
 
-                addSettingsDye(inventory, 28, settings.isScoreboard(phase));
-                addSettingsDye(inventory, 29, settings.isActionbar(phase));
-                addSettingsDye(inventory, 30, settings.isTitle(phase));
-                addSettingsDye(inventory, 31, settings.isNotification(phase));
+                InventoryUtils.addSkull(inventory, 20,
+                        Messages.getString("creation.actionbar.title"),
+                        "c95d37993e594082678472bf9d86823413c250d4332a2c7d8c52de4976b362",
+                        Messages.getStringList("creation.actionbar.lore")
+                );
+                addSettingsToggle(inventory, 29, settings.actionBar(phaseKey));
+
+                InventoryUtils.addSkull(inventory, 21,
+                        Messages.getString("creation.titles.title"),
+                        "97e56140686e476aef5520acbabc239535ff97e24b14d87f4982f13675c",
+                        Messages.getStringList("creation.titles.lore")
+                );
+                addSettingsToggle(inventory, 30, settings.title(phaseKey));
+
+                InventoryUtils.addSkull(inventory, 22,
+                        Messages.getString("creation.notifications.title"),
+                        "2ab5de74bb367e4a55a84a8843e05e94664af551a4b99cdf410436f0e444",
+                        Messages.getStringList("creation.notifications.lore")
+                );
+                addSettingsToggle(inventory, 31, settings.notification(phaseKey));
+
                 InventoryUtils.addItemStack(
-                        inventory, 25, XMaterial.CLOCK, MessagesOld.getString(messageKey),
-                        MessagesOld.getStringList(messageKey + "_lore", new SimpleEntry<>("%length%", StringUtils.formatTime(settings.getCountdown(phase))))
+                        inventory, 25, XMaterial.CLOCK,
+                        Messages.getString("creation.duration.title." + phaseKey.name().toLowerCase()),
+                        Messages.getStringList("creation.duration.lore." + phaseKey.name().toLowerCase(),
+                                Placeholder.unparsed("length", StringUtils.formatTime(settings.countdown(phaseKey).get()))
+                        )
                 );
                 break;
 
             case FINISH:
-                boolean enchant = settings.isFinishCommand();
-                InventoryUtils.addEnchantedItemStack(inventory, 22, XMaterial.WRITABLE_BOOK, 1, MessagesOld.getString("create_page4_runCommands"), enchant, runCommandLore());
+                boolean enchant = !settings.finishCommands().get().isEmpty();
+                InventoryUtils.addEnchantedItemStack(inventory, 22, XMaterial.WRITABLE_BOOK, 1,
+                        Messages.getString("creation.commands.title"), enchant, getCommandLore()
+                );
                 break;
         }
 
         return inventory;
     }
 
-    private void addSettingsDye(Inventory inventory, int position, boolean enabled) {
+    private void addSettingsToggle(Inventory inventory, int position, Type<Boolean> setting) {
+        boolean enabled = setting.get();
         XMaterial material = enabled ? XMaterial.LIME_DYE : XMaterial.GRAY_DYE;
-        String displayNameKey = enabled ? "create_page2_3_setting_enabled" : "create_page2_3_setting_disabled";
-        InventoryUtils.addItemStack(inventory, position, material, MessagesOld.getString(displayNameKey));
+        String displayNameKey = enabled ? "creation.setting.enabled" : "creation.setting.disabled";
+        InventoryUtils.addItemStack(inventory, position, material, Messages.getString(displayNameKey));
     }
 
     private void addMaxPlayers(Inventory inventory) {
-        if (settings.isMaxEnabled()) {
-            int amount = settings.getMaxCandidates() > 0 ? settings.getMaxCandidates() : 16;
-            InventoryUtils.addEnchantedItemStack(inventory, 22, XMaterial.PLAYER_HEAD, amount, MessagesOld.getString("create_page1_maxCandidates_enabled"), true, MessagesOld.getStringList("create_page1_maxCandidates_enabled_lore"));
-        } else {
-            InventoryUtils.addEnchantedItemStack(inventory, 22, XMaterial.SKELETON_SKULL, 1, MessagesOld.getString("create_page1_maxCandidates_disabled"), false, MessagesOld.getStringList("create_page1_maxCandidates_disabled_lore"));
-        }
-    }
+        boolean enabled = false;
+        XMaterial material = XMaterial.SKELETON_SKULL;
+        int amount = 1;
 
-    private List<String> runCommandLore() {
-        List<String> lore = MessagesOld.getStringList("create_page4_runCommands_lore");
-        if (settings.isFinishCommand()) {
-            lore.addAll(MessagesOld.getStringList("create_page4_runCommands_enabled_lore", new SimpleEntry<>("%commands%", getCommandList())));
-        }
-        return lore;
-    }
-
-    private String getCommandList() {
-        List<String> commands = settings.getFinishCommands();
-        if (commands.isEmpty()) {
-            return "§7-";
+        if (settings.candidateLimitEnabled().get()) {
+            enabled = true;
+            material = XMaterial.PLAYER_HEAD;
+            int maxCandidates = settings.maxCandidates().get();
+            amount = maxCandidates > 0 ? maxCandidates : 16;
         }
 
-        StringBuilder stringBuilder = new StringBuilder();
-        commands.forEach(command -> stringBuilder
-                .append(MessagesOld.getString("create_page4_runCommands_enabled_command", new SimpleEntry<>("%command%", command)))
-                .append("\n")
+        String key = enabled ? "enabled" : "disabled";
+        InventoryUtils.addEnchantedItemStack(inventory, 22, material, amount,
+                Messages.getString("creation.max_players.title." + key),
+                enabled,
+                Messages.getStringList("creation.max_players.lore." + key)
         );
-        return stringBuilder.toString();
+    }
+
+    private List<String> getCommandLore() {
+        List<String> lore = Messages.getStringList("creation.commands.lore");
+
+        List<String> commands = settings.finishCommands().get();
+        if (commands.isEmpty()) {
+            lore.add(Messages.getString("creation.commands.empty"));
+        } else {
+            for (String command : commands) {
+                lore.add(Messages.getString("creation.commands.command", Placeholder.unparsed("command", command)));
+            }
+        }
+
+        return lore;
     }
 
     public enum Page {
@@ -176,10 +209,10 @@ public class CreateInventory {
         public void addCurrentPageMarkers(Inventory inventory) {
             addBorder(inventory);
 
-            InventoryUtils.addItemStack(inventory, 46, XMaterial.ANVIL, MessagesOld.getString("create_settings"));
-            InventoryUtils.addItemStack(inventory, 48, XMaterial.ARMOR_STAND, MessagesOld.getString("create_nominationPhase"));
-            InventoryUtils.addItemStack(inventory, 50, XMaterial.FEATHER, MessagesOld.getString("create_votingPhase"));
-            InventoryUtils.addItemStack(inventory, 52, XMaterial.OAK_SIGN, MessagesOld.getString("create_finishPhase"));
+            InventoryUtils.addItemStack(inventory, 46, XMaterial.ANVIL, Messages.getString("creation.page.general"));
+            InventoryUtils.addItemStack(inventory, 48, XMaterial.ARMOR_STAND, Messages.getString("creation.page.nomination"));
+            InventoryUtils.addItemStack(inventory, 50, XMaterial.FEATHER, Messages.getString("creation.page.voting"));
+            InventoryUtils.addItemStack(inventory, 52, XMaterial.OAK_SIGN, Messages.getString("creation.page.finish"));
 
             inventory.getItem(slot).addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
