@@ -1,0 +1,35 @@
+[versions]
+# Platform expectations
+spigot = "1.19.2-R0.1-SNAPSHOT"
+paperlib = "1.0.7"
+
+# Plugins
+luckperms = "5.4"
+worldedit = "7.2.12"
+placeholderapi = "2.11.2"
+
+# Third Party
+annotations = "23.0.0"
+authlib = "1.5.25"
+bstats = "3.0.0"
+fastboard = "1.2.1"
+nbt = "1.5.1"
+xseries = "9.1.0"
+
+[libraries]
+#Platform expectations
+spigot = { group = "org.spigotmc", name = "spigot-api", version.ref = "spigot" }
+paperlib = { group = "io.papermc", name = "paperlib", version.ref = "paperlib" }
+
+# Plugins
+luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
+placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
+worldedit = { group = "com.sk89q.worldedit", name = "worldedit-core", version.ref = "worldedit" }
+
+# Third Party
+annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
+authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
+bstats = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }
+fastboard = { group = "fr.mrmicky", name = "fastboard", version.ref = "fastboard" }
+nbt = { group = "dev.dewy", name = "nbt", version.ref = "nbt" }
+xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }

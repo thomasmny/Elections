@@ -1,0 +1,31 @@
+name: Elections
+version: ${version}
+api-version: 1.13
+author: einTosti
+main: com.eintosti.elections.Elections
+description: §a§o» §f§oThe easiest way to create Elections!
+
+commands:
+  elections:
+    description: Main election command
+    usage: /<command>
+
+permissions:
+  elections.create:
+    description: Create an election
+    default: op
+  elections.cancel:
+    description: Cancel an already running election
+    default: op
+  elections.run:
+    description: Nominate yourself for the election
+    default: true
+  elections.skipstage:
+    description: Skip to the next stage
+    default: op
+  elections.vote:
+    description: Vote for your favourite player
+    default: true
+  elections.command:
+    description: Adds a command to be run when the election finishes
+    default: op
