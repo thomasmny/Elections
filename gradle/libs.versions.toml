@@ -9,7 +9,7 @@ adventure-platform = "4.3.2"
 annotations = "24.0.1"
 anvilgui = "1.9.2-SNAPSHOT"
 authlib = "1.5.25"
-fastboard = "2.0.2"
+fastboard = "2.1.0"
 xseries = "9.9.0"
 
 [libraries]
