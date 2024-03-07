@@ -20,6 +20,7 @@ package de.eintosti.elections;
 import de.eintosti.elections.api.Elections;
 import de.eintosti.elections.api.ElectionsApi;
 import de.eintosti.elections.command.ElectionsCommand;
+import de.eintosti.elections.config.ElectionStorage;
 import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.inventory.CreationInventory;
 import de.eintosti.elections.inventory.RunInventory;
@@ -28,12 +29,16 @@ import de.eintosti.elections.inventory.TopFiveInventory;
 import de.eintosti.elections.inventory.VoteInventory;
 import de.eintosti.elections.messages.MessagesProvider;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public class ElectionsPlugin extends JavaPlugin {
 
+    public static final int METRICS_ID = 21256;
+
+    private ElectionStorage storage;
     private ElectionImpl election;
 
     private BukkitAudiences adventure;
@@ -51,10 +56,13 @@ public class ElectionsPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.adventure = BukkitAudiences.create(this);
+
         Elections api = new ElectionsApi();
         getServer().getServicesManager().register(Elections.class, api, this, ServicePriority.Normal);
         ElectionsApi.register(api);
 
+        this.storage = new ElectionStorage(this);
         this.election = new ElectionImpl(this);
 
         this.creationInventory = new CreationInventory(this);
@@ -64,11 +72,13 @@ public class ElectionsPlugin extends JavaPlugin {
         this.topFiveInventory = new TopFiveInventory(this);
 
         new ElectionsCommand(this);
+
+        new Metrics(this, METRICS_ID);
     }
 
     @Override
     public void onDisable() {
-        this.election.getPhase().finish();
+        storage.saveElection(election);
 
         if (this.adventure != null) {
             this.adventure.close();

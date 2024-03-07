@@ -84,7 +84,7 @@ public abstract class CountdownPhase extends AbstractPhase {
 
         String phaseKey = phase.name().toLowerCase(Locale.ROOT);
         Bukkit.getOnlinePlayers().forEach(pl -> ActionBar.sendActionBar(pl,
-                Messages.getString("election." + phaseKey + ".title",
+                Messages.getString("election." + phaseKey + ".actionbar",
                         Placeholder.unparsed("time", StringUtils.formatTime(countdown))
                 ))
         );

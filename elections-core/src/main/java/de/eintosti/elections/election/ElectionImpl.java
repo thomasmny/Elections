@@ -42,23 +42,22 @@ import java.util.stream.Collectors;
 public class ElectionImpl implements Election {
 
     private final ElectionsPlugin plugin;
-    private final ElectionSettings settings;
 
     private final Map<UUID, Candidate> nominations;
-    private final Map<UUID, Candidate> playerVotes;
+    private final Map<UUID, Candidate> votes;
     private final Map<UUID, Integer> candidateVoteCount;
 
+    private ElectionSettings settings;
     private AbstractPhase phase;
 
     public ElectionImpl(ElectionsPlugin plugin) {
         this.plugin = plugin;
-        this.settings = new ElectionSettings();
 
         this.nominations = new HashMap<>();
-        this.playerVotes = new HashMap<>();
+        this.votes = new HashMap<>();
         this.candidateVoteCount = new HashMap<>();
 
-        this.phase = new SetupPhase(plugin);
+        load();
     }
 
     public JavaPlugin getPlugin() {
@@ -161,7 +160,7 @@ public class ElectionImpl implements Election {
     @Override
     @Nullable
     public Candidate getVote(Player voter) {
-        return this.playerVotes.get(voter.getUniqueId());
+        return this.votes.get(voter.getUniqueId());
     }
 
     @Override
@@ -186,7 +185,7 @@ public class ElectionImpl implements Election {
             if (candidate.equals(previousCandidate)) {
                 int previousCandidateVoteCount = candidateVoteCount.get(previousCandidate.getUniqueId());
                 candidateVoteCount.put(previousCandidate.getUniqueId(), previousCandidateVoteCount - 1);
-                playerVotes.remove(voter.getUniqueId());
+                votes.remove(voter.getUniqueId());
                 return;
             }
 
@@ -198,7 +197,7 @@ public class ElectionImpl implements Election {
             int currentCandidateVoteCount = candidateVoteCount.get(candidate.getUniqueId());
             int currentCandidateNewVoteCount = currentCandidateVoteCount + 1;
             candidateVoteCount.put(candidate.getUniqueId(), currentCandidateNewVoteCount);
-            playerVotes.put(voter.getUniqueId(), candidate);
+            votes.put(voter.getUniqueId(), candidate);
         }
     }
 
@@ -216,5 +215,21 @@ public class ElectionImpl implements Election {
                 .map(entry -> getCandidate(entry.getKey()))
                 .collect(Collectors.toList());
 
+    }
+
+    private void load() {
+        this.settings = new ElectionSettings();
+        this.phase = new SetupPhase(plugin);
+    }
+
+    @Override
+    public @NotNull Map<String, Object> serialize() {
+        Map<String, Object> election = new HashMap<>();
+
+        election.put("settings", settings.serialize());
+        election.put("nominations", nominations);
+        election.put("votes", votes);
+
+        return election;
     }
 }

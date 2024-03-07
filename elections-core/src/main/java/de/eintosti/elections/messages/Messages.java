@@ -17,7 +17,6 @@
  */
 package de.eintosti.elections.messages;
 
-import com.google.common.collect.Lists;
 import de.eintosti.elections.ElectionsPlugin;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
@@ -33,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Messages {
 
@@ -91,10 +92,10 @@ public final class Messages {
      * @return An array of {@link TagResolver} objects containing the merged resolvers
      */
     private static TagResolver[] mergeTagResolvers(TagResolver... tagResolvers) {
-        return Lists.newArrayList(
-                tagResolvers,
-                Placeholder.component("prefix", MINI_MESSAGE.deserialize(MessagesProvider.MESSAGES.get("prefix")))
-        ).toArray(new TagResolver[0]);
+        return Stream.concat(
+                Stream.of(Placeholder.component("prefix", MINI_MESSAGE.deserialize(MessagesProvider.MESSAGES.get("prefix")))),
+                Arrays.stream(tagResolvers)
+        ).toArray(TagResolver[]::new);
     }
 
     /**
@@ -122,8 +123,10 @@ public final class Messages {
      */
     @NotNull
     public static List<String> getStringList(String key, TagResolver... tagResolvers) {
-        String message = LEGACY_SERIALIZER.serialize(getMessage(key, tagResolvers));
-        return Arrays.asList(message.split("\n"));
+        List<Component> messages = getMessages(key, tagResolvers);
+        return messages.stream()
+                .map(LEGACY_SERIALIZER::serialize)
+                .collect(Collectors.toList());
     }
 
     /**

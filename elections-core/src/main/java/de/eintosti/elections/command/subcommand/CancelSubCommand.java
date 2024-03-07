@@ -35,19 +35,14 @@ public class CancelSubCommand implements SubCommand {
     @Override
     public void execute(Player player, String[] args) {
         if (!player.hasPermission("elections.cancel")) {
-            Messages.sendMessage(player, "election.vote.no_permission");
+            Messages.sendMessage(player, "election.cancel.no_permission");
             return;
         }
 
         Election election = plugin.getElection();
-        switch (election.getPhase().getPhaseType()) {
-            case VOTING:
-            case NOMINATION:
-                // Continue below
-                break;
-            default:
-                Messages.sendMessage(player, "election.cancel.not_started");
-                return;
+        if (!election.isActive()) {
+            Messages.sendMessage(player, "election.cancel.not_started");
+            return;
         }
 
         XSound.ENTITY_ITEM_BREAK.play(player);

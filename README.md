@@ -110,7 +110,7 @@ repositories {
 }
 
 dependencies {
-  compileOnly("de.eintosti:buildsystem-api:version")
+  compileOnly("de.eintosti:elections-api:version")
 }
 ```
 

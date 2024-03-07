@@ -48,26 +48,45 @@ public class ElectionsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             plugin.getLogger().info("You have to be a player to use this command!");
             return true;
         }
 
+        Player player = (Player) sender;
         if (args.length == 0) {
             sendPluginInfo(player);
             return true;
         }
 
-        SubCommand subCommand = switch (args[0].toLowerCase()) {
-            case "create" -> new CreateSubCommand(plugin);
-            case "run" -> new RunSubCommand(plugin);
-            case "vote" -> new VoteSubCommand(plugin);
-            case "skipstage" -> new SkipStageSubCommand(plugin);
-            case "top5" -> new TopFiveCommand(plugin);
-            case "cancel" -> new CancelSubCommand(plugin);
-            case "command" -> new CommandSubCommand(plugin);
-            default -> new HelpSubCommand();
-        };
+        SubCommand subCommand;
+        switch (args[0].toLowerCase()) {
+            case "create":
+                subCommand = new CreateSubCommand(plugin);
+                break;
+            case "run":
+                subCommand = new RunSubCommand(plugin);
+                break;
+            case "vote":
+                subCommand = new VoteSubCommand(plugin);
+                break;
+            case "skipstage":
+                subCommand = new SkipStageSubCommand(plugin);
+                break;
+            case "top5":
+                subCommand = new TopFiveCommand(plugin);
+                break;
+            case "cancel":
+                subCommand = new CancelSubCommand(plugin);
+                break;
+            case "command":
+                subCommand = new CommandSubCommand(plugin);
+                break;
+            default:
+                subCommand = new HelpSubCommand();
+                break;
+        }
+
         subCommand.execute(player, args);
         return true;
     }

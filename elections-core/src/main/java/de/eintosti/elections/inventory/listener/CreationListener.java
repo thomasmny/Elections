@@ -62,7 +62,7 @@ public class CreationListener implements Listener {
         }
 
         CreationInventory createInventory = plugin.getCreationInventory();
-        Page page = Page.matchPage(event.getInventory());
+        Page page = Page.fromInventory(event.getInventory());
 
         switch (event.getSlot()) {
             case 4:
@@ -73,7 +73,7 @@ public class CreationListener implements Listener {
             case 48:
             case 50:
             case 52:
-                player.openInventory(createInventory.getInventory(page));
+                player.openInventory(createInventory.getInventory(Page.fromSlot(event.getSlot())));
                 XSound.ENTITY_ITEM_PICKUP.play(player);
                 return;
         }
@@ -119,7 +119,7 @@ public class CreationListener implements Listener {
                 PhaseType settingPhase = page == Page.NOMINATION ? PhaseType.NOMINATION : PhaseType.VOTING;
 
                 switch (event.getSlot()) {
-                    case 25:
+                    case 24:
                         player.openInventory(plugin.getTimeInventory().getInventory(settingPhase));
                         XSound.ENTITY_CHICKEN_EGG.play(player);
                         return;

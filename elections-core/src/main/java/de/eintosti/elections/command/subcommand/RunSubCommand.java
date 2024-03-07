@@ -59,14 +59,12 @@ public class RunSubCommand implements SubCommand {
             case NO_PERMISSION:
                 Messages.sendMessage(player, "election.run.no_permission");
                 break;
-            case ALREADY_NOMINATED:
-                //TODO
-                break;
             case TOO_MANY_CANDIDATES:
                 Messages.sendMessage(player, "election.run.too_many_players",
                         Placeholder.unparsed("amount", String.valueOf(election.getSettings().maxCandidates().get()))
                 );
                 break;
+            case ALREADY_NOMINATED:
             case ALLOWED:
                 XSound.BLOCK_CHEST_OPEN.play(player);
                 player.openInventory(plugin.getRunInventory().getInventory(player));

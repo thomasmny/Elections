@@ -20,6 +20,7 @@ package de.eintosti.elections.api.election;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.Phase;
 import de.eintosti.elections.api.election.settings.Settings;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public interface Election {
+public interface Election extends ConfigurationSerializable {
 
     Settings getSettings();
 

@@ -63,29 +63,28 @@ public class TopFiveInventory {
         String displayName, url;
 
         switch (rank) {
-            case 1 -> {
+            case 1:
                 displayName = Messages.getString("top_5.first");
                 url = "af3034d24a85da31d67932c33e5f1821e219d5dcd9c2ba4f2559df48deea";
-            }
-            case 2 -> {
+                break;
+            case 2:
                 displayName = Messages.getString("top_5.second");
                 url = "dc61b04e12a879767b3b72d69627f29a83bdeb6220f5dc7bea2eb2529d5b097";
-            }
-            case 3 -> {
+                break;
+            case 3:
                 displayName = Messages.getString("top_5.third");
                 url = "f8ebab57b7614bb22a117be43e848bcd14daecb50e8f5d0926e4864dff470";
-            }
-            case 4 -> {
+                break;
+            case 4:
                 displayName = Messages.getString("top_5.fourth");
                 url = "d2e78fb22424232dc27b81fbcb47fd24c1acf76098753f2d9c28598287db5";
-            }
-            case 5 -> {
+                break;
+            case 5:
                 displayName = Messages.getString("top_5.fifth");
                 url = "6d57e3bc88a65730e31a14e3f41e038a5ecf0891a6c243643b8e5476ae2";
-            }
-            default -> {
+                break;
+            default:
                 throw new IllegalArgumentException("Unable to set skull for rank " + rank);
-            }
         }
 
         InventoryUtils.addSkull(inventory, position, displayName, url);

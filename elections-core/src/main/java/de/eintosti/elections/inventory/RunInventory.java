@@ -95,7 +95,7 @@ public class RunInventory {
 
         InventoryUtils.addItemStack(inventory, 16,
                 nominated ? XMaterial.LIME_DYE : XMaterial.RED_DYE,
-                Messages.getString("run." + key + ".name", position),
+                Messages.getString("run." + key + ".title", position),
                 Messages.getStringList("run." + key + ".lore", position)
         );
     }

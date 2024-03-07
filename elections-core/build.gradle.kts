@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.adventure.minimessage)
     implementation(libs.adventure.platform)
     implementation(libs.xseries)
+    implementation(libs.bstats)
 }
 
 tasks {
@@ -44,10 +45,11 @@ tasks {
         archiveFileName.set("${rootProject.name}-${project.version}.jar")
 
         val shadePath = "de.eintosti.elections.util.external"
-        relocate("net.wesjd.anvilgui", "$shadePath.anvilgui")
-        relocate("fr.mrmicky.fastboard", "$shadePath.fastboard")
         relocate("com.cryptomorin.xseries", "$shadePath.xseries")
-        relocate("net.kyori.adventure", "$shadePath.adventure")
+        relocate("fr.mrmicky.fastboard", "$shadePath.fastboard")
+        relocate("net.kyori", "$shadePath.kyori")
+        relocate("net.wesjd.anvilgui", "$shadePath.anvilgui")
+        relocate("org.bstats", "$shadePath.bstats")
     }
 
     processResources {

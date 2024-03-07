@@ -67,7 +67,7 @@ public class NominationPhase extends ScoreboardPhase {
     //TODO: Remove fake candidates
     @Override
     public void onFinish() {
-        Map<String, String> candidates = new HashMap<>() {{
+        Map<String, String> candidates = new HashMap<String, String>() {{
             put("GommeHD", "e9013c2f-da01-425f-a48b-516f55e94386");
             put("Deennis", "6cf19618-9662-415a-b8c8-aab1f3e0f9f7");
             put("Kreuzrausch", "8f12bdd1-fb15-4386-9bf3-cbdbb4495cbd");

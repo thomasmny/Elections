@@ -48,7 +48,7 @@ public class TimeInventory {
         InventoryUtils.addItemStack(
                 inventory, 13, XMaterial.CLOCK,
                 Messages.getString("time.phase.title." + phaseKey),
-                Messages.getStringList("time.phase.lore" + phaseKey,
+                Messages.getStringList("time.phase.lore." + phaseKey,
                         Placeholder.unparsed("time", StringUtils.formatTime(settings.countdown(phase).get()))
                 )
         );

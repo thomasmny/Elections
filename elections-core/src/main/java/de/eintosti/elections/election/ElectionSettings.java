@@ -115,11 +115,14 @@ public class ElectionSettings implements Settings, ConfigurationSerializable {
 
     @Override
     public Type<Integer> countdown(PhaseType phase) {
-        return switch (phase) {
-            case NOMINATION -> nominationCountdown;
-            case VOTING -> votingCountdown;
-            default -> throw new AssertionError("Unable to get countdown in phase " + phase);
-        };
+        switch (phase) {
+            case NOMINATION:
+                return nominationCountdown;
+            case VOTING:
+                return votingCountdown;
+            default:
+                throw new IllegalArgumentException("Unable to get countdown for phase " + phase);
+        }
     }
 
     @Override
@@ -134,38 +137,50 @@ public class ElectionSettings implements Settings, ConfigurationSerializable {
 
     @Override
     public Type<Boolean> scoreboard(PhaseType phase) {
-        return switch (phase) {
-            case NOMINATION -> nominationScoreboard;
-            case VOTING -> votingScoreboard;
-            default -> throw new AssertionError("Unable to get scoreboard in phase " + phase);
-        };
+        switch (phase) {
+            case NOMINATION:
+                return nominationScoreboard;
+            case VOTING:
+                return votingScoreboard;
+            default:
+                throw new IllegalArgumentException("Unable to get scoreboard for phase " + phase);
+        }
     }
 
     @Override
     public Type<Boolean> actionBar(PhaseType phase) {
-        return switch (phase) {
-            case NOMINATION -> nominationActionBar;
-            case VOTING -> votingActionBar;
-            default -> throw new AssertionError("Unable to get actionbar in phase " + phase);
-        };
+        switch (phase) {
+            case NOMINATION:
+                return nominationActionBar;
+            case VOTING:
+                return votingActionBar;
+            default:
+                throw new IllegalArgumentException("Unable to get actionbar for phase " + phase);
+        }
     }
 
     @Override
     public Type<Boolean> title(PhaseType phase) {
-        return switch (phase) {
-            case NOMINATION -> nominationTitle;
-            case VOTING -> votingTitle;
-            default -> throw new AssertionError("Unable to get title in phase " + phase);
-        };
+        switch (phase) {
+            case NOMINATION:
+                return nominationTitle;
+            case VOTING:
+                return votingTitle;
+            default:
+                throw new IllegalArgumentException("Unable to get title for phase " + phase);
+        }
     }
 
     @Override
     public Type<Boolean> notification(PhaseType phase) {
-        return switch (phase) {
-            case NOMINATION -> nominationNotification;
-            case VOTING -> votingNotification;
-            default -> throw new AssertionError("Unable to get notification in phase " + phase);
-        };
+        switch (phase) {
+            case NOMINATION:
+                return nominationNotification;
+            case VOTING:
+                return votingNotification;
+            default:
+                throw new IllegalArgumentException("Unable to get notification for phase " + phase);
+        }
     }
 
     @Override

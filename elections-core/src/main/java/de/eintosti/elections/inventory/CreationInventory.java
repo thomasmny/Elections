@@ -99,7 +99,7 @@ public class CreationInventory {
                 addSettingsToggle(inventory, 31, settings.notification(phaseKey));
 
                 InventoryUtils.addItemStack(
-                        inventory, 25, XMaterial.CLOCK,
+                        inventory, 24, XMaterial.CLOCK,
                         Messages.getString("creation.duration.title." + phaseKey.name().toLowerCase()),
                         Messages.getStringList("creation.duration.lore." + phaseKey.name().toLowerCase(),
                                 Placeholder.unparsed("length", StringUtils.formatTime(settings.countdown(phaseKey).get()))
@@ -181,9 +181,24 @@ public class CreationInventory {
          * @param inventory The inventory to match the page from
          * @return The matched page, or {@link #GENERAL} if no match is found
          */
-        public static Page matchPage(Inventory inventory) {
+        public static Page fromInventory(Inventory inventory) {
             return Arrays.stream(values())
                     .filter(page -> inventory.getItem(page.getSlot()).containsEnchantment(Enchantment.DURABILITY))
+                    .findFirst()
+                    .orElse(GENERAL);
+        }
+
+        /**
+         * Matches the page based on the given slot.
+         * <p>
+         * The slot is that which has to be clicked in order to open the respective page.
+         *
+         * @param slot The slot which was clicked
+         * @return The matched page, or {@link #GENERAL} if no match is found
+         */
+        public static Page fromSlot(int slot) {
+            return Arrays.stream(values())
+                    .filter(page -> page.getSlot() == slot)
                     .findFirst()
                     .orElse(GENERAL);
         }

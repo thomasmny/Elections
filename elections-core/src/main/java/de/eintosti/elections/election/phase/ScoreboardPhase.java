@@ -23,7 +23,7 @@ import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.election.ElectionSettings;
 import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.external.StringUtils;
-import fr.mrmicky.fastboard.adventure.FastBoard;
+import fr.mrmicky.fastboard.FastBoard;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -107,7 +107,7 @@ public abstract class ScoreboardPhase extends CountdownPhase implements Listener
         }
 
         FastBoard board = new FastBoard(player);
-        board.updateTitle(Messages.getMessage("scoreboard.title"));
+        board.updateTitle(Messages.getString("scoreboard.title"));
         this.scoreboards.put(player.getUniqueId(), board);
     }
 
@@ -117,7 +117,7 @@ public abstract class ScoreboardPhase extends CountdownPhase implements Listener
      * @param board The board to update
      */
     private void updateBoard(FastBoard board) {
-        board.updateLines(Messages.getMessages("scoreboard.body",
+        board.updateLines(Messages.getStringList("scoreboard.body",
                 Placeholder.component("phase", Messages.getMessage(
                         phaseType == PhaseType.NOMINATION
                                 ? "scoreboard.phase.nomination"
