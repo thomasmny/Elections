@@ -21,11 +21,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@NullMarked
 public class ElectionsTabCompleter extends ArgumentSorter implements TabCompleter {
 
     public ElectionsTabCompleter(JavaPlugin plugin) {
@@ -33,7 +34,7 @@ public class ElectionsTabCompleter extends ArgumentSorter implements TabComplete
     }
 
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command label, @NotNull String alias, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, Command label, String alias, String[] args) {
         List<String> arrayList = new ArrayList<>();
 
         if (args.length == 1) {

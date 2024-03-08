@@ -32,7 +32,7 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class ElectionsPlugin extends JavaPlugin {
 
@@ -56,12 +56,11 @@ public class ElectionsPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.adventure = BukkitAudiences.create(this);
-
         Elections api = new ElectionsApi();
         getServer().getServicesManager().register(Elections.class, api, this, ServicePriority.Normal);
         ElectionsApi.register(api);
 
+        this.adventure = BukkitAudiences.create(this);
         this.storage = new ElectionStorage(this);
         this.election = new ElectionImpl(this);
 
@@ -88,7 +87,7 @@ public class ElectionsPlugin extends JavaPlugin {
         ElectionsApi.unregister();
     }
 
-    public @NotNull BukkitAudiences adventure() {
+    public @NonNull BukkitAudiences adventure() {
         if (this.adventure == null) {
             throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
         }

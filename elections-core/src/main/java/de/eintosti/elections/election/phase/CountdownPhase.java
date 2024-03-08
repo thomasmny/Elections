@@ -27,18 +27,22 @@ import de.eintosti.elections.util.external.StringUtils;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 
 /**
  * A {@link Phase} which has a countdown.
  */
+@NullMarked
 public abstract class CountdownPhase extends AbstractPhase {
 
     private final ElectionImpl election;
     private final ElectionSettings settings;
     private final PhaseType phase;
 
+    @Nullable
     private BukkitTask countdownTask;
     private int countdown;
 
@@ -71,7 +75,9 @@ public abstract class CountdownPhase extends AbstractPhase {
             sendActionBarTimer();
 
             if (countdown <= 0) {
-                countdownTask.cancel();
+                if (countdownTask != null) {
+                    countdownTask.cancel();
+                }
                 election.startNextPhase();
             }
         }, 20L, 20L);

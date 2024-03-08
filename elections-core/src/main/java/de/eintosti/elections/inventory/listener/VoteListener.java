@@ -31,7 +31,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class VoteListener implements Listener {
 
     private final ElectionsPlugin plugin;

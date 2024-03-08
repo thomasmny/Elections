@@ -28,7 +28,9 @@ import de.eintosti.elections.util.external.StringUtils;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class TimeInventory {
 
     private final Settings settings;

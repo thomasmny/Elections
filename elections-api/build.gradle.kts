@@ -9,7 +9,8 @@ plugins {
 
 dependencies {
     compileOnly(libs.spigot)
-    compileOnly(libs.annotations)
+    compileOnlyApi(libs.annotations)
+    compileOnlyApi(libs.jspecify)
 }
 
 java {
@@ -26,7 +27,7 @@ tasks {
         opt.charSet("UTF-8")
         opt.links("https://docs.oracle.com/javase/8/docs/api/")
         opt.links("https://hub.spigotmc.org/javadocs/spigot/")
-        opt.links("https://javadoc.io/static/org.jetbrains/annotations/24.0.1/")
+        opt.links("https://javadoc.io/static/org.jetbrains/annotations/24.1.0/")
         opt.isLinkSource = true
         opt.isUse = true
         opt.keyWords()

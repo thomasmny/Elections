@@ -19,11 +19,13 @@ package de.eintosti.elections.inventory;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@NullMarked
 public abstract class PaginatedInventory {
 
     protected final Map<UUID, Integer> invIndex;
@@ -31,6 +33,7 @@ public abstract class PaginatedInventory {
 
     public PaginatedInventory() {
         this.invIndex = new HashMap<>();
+        this.inventories = new Inventory[0];
     }
 
     public int getInvIndex(Player player) {

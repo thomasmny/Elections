@@ -18,14 +18,19 @@
 package de.eintosti.elections.election.candidate;
 
 import de.eintosti.elections.api.election.candidate.Candidate;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.UUID;
 
+@NullMarked
 public class ElectionCandidate implements Candidate, Serializable {
 
     private final UUID uuid;
     private final String name;
+
+    @Nullable
     private String status;
 
     public ElectionCandidate(UUID uuid, String name) {
@@ -44,7 +49,7 @@ public class ElectionCandidate implements Candidate, Serializable {
     }
 
     @Override
-    public String getStatus() {
+    public @Nullable String getStatus() {
         return this.status;
     }
 
@@ -54,7 +59,7 @@ public class ElectionCandidate implements Candidate, Serializable {
     }
 
     @Override
-    public void setStatus(String status) {
+    public void setStatus(@Nullable String status) {
         this.status = status;
     }
 

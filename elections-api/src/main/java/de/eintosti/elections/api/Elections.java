@@ -18,7 +18,9 @@
 package de.eintosti.elections.api;
 
 import de.eintosti.elections.api.election.Election;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public interface Elections {
 
     Election getElection();

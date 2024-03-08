@@ -17,13 +17,15 @@
  */
 package de.eintosti.elections.api.election.candidate;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
 /**
  * The Candidate interface defines the properties and behaviors of a candidate in an election.
  */
+@NullMarked
 public interface Candidate {
 
     /**
@@ -60,5 +62,5 @@ public interface Candidate {
      *
      * @param status The new status of the candidate
      */
-    void setStatus(String status);
+    void setStatus(@Nullable String status);
 }

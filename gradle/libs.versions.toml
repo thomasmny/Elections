@@ -11,6 +11,7 @@ anvilgui = "1.9.2-SNAPSHOT"
 authlib = "1.5.25"
 bstats = "3.0.2"
 fastboard = "2.1.0"
+jspecify = "0.3.0"
 xseries = "9.9.0"
 
 [libraries]
@@ -25,5 +26,6 @@ annotations = { group = "org.jetbrains", name = "annotations", version.ref = "an
 anvilgui = { group = "net.wesjd", name = "anvilgui", version.ref = "anvilgui" }
 authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
 bstats = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 fastboard = { group = "fr.mrmicky", name = "fastboard", version.ref = "fastboard" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }

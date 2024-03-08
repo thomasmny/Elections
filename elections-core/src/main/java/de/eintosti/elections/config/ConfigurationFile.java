@@ -22,16 +22,18 @@ import de.eintosti.elections.ElectionsPlugin;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.File;
 import java.io.IOException;
 
+@NullMarked
 public abstract class ConfigurationFile {
 
     private final File file;
     private final FileConfiguration configuration;
 
-    public ConfigurationFile(ElectionsPlugin plugin, String fileName) {
+    public ConfigurationFile(final ElectionsPlugin plugin, final String fileName) {
         this.file = new File(plugin.getDataFolder(), fileName);
         this.configuration = YamlConfiguration.loadConfiguration(file);
         loadFile();

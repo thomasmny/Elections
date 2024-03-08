@@ -21,7 +21,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.election.settings.Settings;
-import de.eintosti.elections.api.election.settings.Settings.Type;
+import de.eintosti.elections.api.election.settings.Settings.Setting;
 import de.eintosti.elections.inventory.listener.CreationListener;
 import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.InventoryUtils;
@@ -30,11 +30,13 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
 
+@NullMarked
 public class CreationInventory {
 
     private final Settings settings;
@@ -118,7 +120,7 @@ public class CreationInventory {
         return inventory;
     }
 
-    private void addSettingsToggle(Inventory inventory, int position, Type<Boolean> setting) {
+    private void addSettingsToggle(Inventory inventory, int position, Setting<Boolean> setting) {
         boolean enabled = setting.get();
         XMaterial material = enabled ? XMaterial.LIME_DYE : XMaterial.GRAY_DYE;
         String displayNameKey = enabled ? "creation.setting.enabled" : "creation.setting.disabled";
@@ -167,6 +169,7 @@ public class CreationInventory {
         FINISH(52, null);
 
         private final int slot;
+        @Nullable
         private final PhaseType phase;
 
         Page(int slot, @Nullable PhaseType phase) {
@@ -217,6 +220,7 @@ public class CreationInventory {
          *
          * @return The phase
          */
+        @Nullable
         public PhaseType getPhase() {
             return phase;
         }

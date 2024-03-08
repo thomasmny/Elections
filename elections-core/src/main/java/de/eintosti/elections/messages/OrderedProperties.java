@@ -17,7 +17,8 @@
  */
 package de.eintosti.elections.messages;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -30,11 +31,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.Serial;
 import java.io.Serializable;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -74,9 +75,9 @@ import java.util.Vector;
  * @author Etienne Studer
  * @see Properties
  */
+@NullMarked
 final class OrderedProperties implements Serializable {
 
-    @Serial
     private static final long serialVersionUID = 1L;
 
     private transient Map<String, String> properties;
@@ -113,6 +114,7 @@ final class OrderedProperties implements Serializable {
     /**
      * See {@link Properties#setProperty(String, String)}.
      */
+    @Nullable
     public String setProperty(String key, String value) {
         return properties.put(key, value);
     }
@@ -214,11 +216,11 @@ final class OrderedProperties implements Serializable {
         if (commentRequiresEscaping(comments) || propertiesRequireEscaping(properties)) {
             storeViaReflection(stream, comments, properties);
         } else {
-            properties.store(new DateSuppressingPropertiesBufferedWriter(new OutputStreamWriter(stream, "8859_1")), comments);
+            properties.store(new DateSuppressingPropertiesBufferedWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8)), comments);
         }
     }
 
-    private static boolean commentRequiresEscaping(String comments) {
+    private static boolean commentRequiresEscaping(@Nullable String comments) {
         return comments != null && comments.chars().anyMatch(c -> c > '\u00ff');
     }
 
@@ -228,15 +230,15 @@ final class OrderedProperties implements Serializable {
         return !p.isEmpty() && (p.keySet().stream().anyMatch(k -> keyValueRequiresEscaping(k)) || p.values().stream().anyMatch(v -> keyValueRequiresEscaping(v)));
     }
 
-    private static boolean keyValueRequiresEscaping(String s) {
+    private static boolean keyValueRequiresEscaping(@Nullable String s) {
         return s != null && s.chars().anyMatch(c -> (c < 0x0020) || (c > 0x007e));
     }
 
-    private static void storeViaReflection(OutputStream stream, String comments, CustomProperties customProperties) throws IOException {
+    private static void storeViaReflection(OutputStream stream, String comments, CustomProperties customProperties) {
         try {
             Method method = Properties.class.getDeclaredMethod("store0", BufferedWriter.class, String.class, boolean.class);
             method.setAccessible(true);
-            method.invoke(customProperties, new DateSuppressingPropertiesBufferedWriter(new OutputStreamWriter(stream, "8859_1")), comments, true);
+            method.invoke(customProperties, new DateSuppressingPropertiesBufferedWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8)), comments, true);
         } catch (NoSuchMethodException | IllegalAccessException | SecurityException | InvocationTargetException e) {
             throw new RuntimeException(e.getCause());
         }
@@ -372,8 +374,10 @@ final class OrderedProperties implements Serializable {
     /**
      * Builder for {@link OrderedProperties} instances.
      */
+    @NullMarked
     public static final class OrderedPropertiesBuilder {
 
+        @Nullable
         private Comparator<? super String> comparator;
         private boolean suppressDate;
 
@@ -405,9 +409,9 @@ final class OrderedProperties implements Serializable {
          * @return the new instance
          */
         public OrderedProperties build() {
-            Map<String, String> properties = (this.comparator != null) ?
-                    new TreeMap<>(comparator) :
-                    new LinkedHashMap<>();
+            Map<String, String> properties = (this.comparator != null)
+                    ? new TreeMap<>(comparator)
+                    : new LinkedHashMap<>();
             return new OrderedProperties(properties, suppressDate);
         }
     }
@@ -416,6 +420,7 @@ final class OrderedProperties implements Serializable {
      * Custom {@link Properties} that delegates reading, writing, and enumerating properties to the
      * backing {@link OrderedProperties} instance's properties.
      */
+    @NullMarked
     private static final class CustomProperties extends Properties {
 
         private final Map<String, String> targetProperties;
@@ -445,13 +450,13 @@ final class OrderedProperties implements Serializable {
         }
 
         @Override
-        public @NotNull Set<Object> keySet() {
+        public Set<Object> keySet() {
             return new LinkedHashSet<>(targetProperties.keySet());
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public @NotNull Set<Map.Entry<Object, Object>> entrySet() {
+        public Set<Map.Entry<Object, Object>> entrySet() {
             Set<?> entrySet = targetProperties.entrySet();
             return (Set<Map.Entry<Object, Object>>) entrySet;
         }
@@ -463,11 +468,14 @@ final class OrderedProperties implements Serializable {
      * the last comment line. Using the JDK Properties class to store properties, the last comment
      * line always contains the current date which is what we want to filter out.
      */
+    @NullMarked
     private static final class DateSuppressingPropertiesBufferedWriter extends BufferedWriter {
 
         private final String LINE_SEPARATOR = System.lineSeparator();
 
+        @Nullable
         private StringBuilder currentComment;
+        @Nullable
         private String previousComment;
 
         private DateSuppressingPropertiesBufferedWriter(Writer out) {
@@ -475,7 +483,7 @@ final class OrderedProperties implements Serializable {
         }
 
         @Override
-        public void write(@NotNull String string) throws IOException {
+        public void write(String string) throws IOException {
             if (currentComment != null) {
                 currentComment.append(string);
                 if (string.endsWith(LINE_SEPARATOR)) {

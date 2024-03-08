@@ -20,6 +20,7 @@ package de.eintosti.elections.api;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.Election;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jspecify.annotations.NullMarked;
 
 import java.lang.reflect.Method;
 
@@ -28,6 +29,7 @@ import java.lang.reflect.Method;
  *
  * @author lucko
  */
+@NullMarked
 public class ElectionsApi implements Elections {
 
     private static final Method SINGLETON_SET_METHOD;

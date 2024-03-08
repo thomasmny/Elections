@@ -24,9 +24,11 @@ import de.eintosti.elections.command.SubCommand;
 import de.eintosti.elections.messages.Messages;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Arrays;
 
+@NullMarked
 public class CommandSubCommand implements SubCommand {
 
     private final ElectionsPlugin plugin;

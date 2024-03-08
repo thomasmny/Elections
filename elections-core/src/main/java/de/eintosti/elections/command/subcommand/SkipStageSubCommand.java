@@ -22,7 +22,9 @@ import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.command.SubCommand;
 import de.eintosti.elections.messages.Messages;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SkipStageSubCommand implements SubCommand {
 
     private final Election election;

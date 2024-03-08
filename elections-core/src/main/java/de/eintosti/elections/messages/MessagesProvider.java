@@ -19,7 +19,8 @@ package de.eintosti.elections.messages;
 
 import de.eintosti.elections.ElectionsPlugin;
 import org.apache.commons.io.IOUtils;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Closeable;
 import java.io.File;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+@NullMarked
 public class MessagesProvider {
 
     protected static final Map<String, String> MESSAGES = new HashMap<>();

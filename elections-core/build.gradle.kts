@@ -23,7 +23,8 @@ dependencies {
 
     compileOnly(libs.spigot)
     compileOnly(libs.authlib)
-    compileOnly(libs.annotations)
+    compileOnlyApi(libs.annotations)
+    compileOnlyApi(libs.jspecify)
 
     api(libs.anvilgui)
     api(libs.fastboard)
@@ -31,8 +32,8 @@ dependencies {
     implementation(libs.adventure.api)
     implementation(libs.adventure.minimessage)
     implementation(libs.adventure.platform)
-    implementation(libs.xseries)
     implementation(libs.bstats)
+    implementation(libs.xseries)
 }
 
 tasks {

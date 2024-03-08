@@ -25,7 +25,9 @@ import de.eintosti.elections.command.SubCommand;
 import de.eintosti.elections.messages.Messages;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class RunSubCommand implements SubCommand {
 
     private final ElectionsPlugin plugin;

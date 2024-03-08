@@ -27,7 +27,9 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class VotingPhase extends ScoreboardPhase {
 
     private final ElectionsPlugin plugin;

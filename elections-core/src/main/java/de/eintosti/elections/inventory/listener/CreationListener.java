@@ -22,7 +22,7 @@ import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.election.settings.Settings;
-import de.eintosti.elections.api.election.settings.Settings.Type;
+import de.eintosti.elections.api.election.settings.Settings.Setting;
 import de.eintosti.elections.inventory.CreationInventory;
 import de.eintosti.elections.inventory.CreationInventory.Page;
 import de.eintosti.elections.messages.Messages;
@@ -34,10 +34,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collections;
 import java.util.List;
 
+@NullMarked
 public class CreationListener implements Listener {
 
     private final ElectionsPlugin plugin;
@@ -87,7 +89,7 @@ public class CreationListener implements Listener {
                         return;
 
                     case 22:
-                        Type<Boolean> maxCandidatesEnabled = settings.candidateLimitEnabled();
+                        Setting<Boolean> maxCandidatesEnabled = settings.candidateLimitEnabled();
                         if (event.getClick().isShiftClick()) {
                             maxCandidatesEnabled.set(!maxCandidatesEnabled.get());
                             break;
@@ -124,19 +126,19 @@ public class CreationListener implements Listener {
                         XSound.ENTITY_CHICKEN_EGG.play(player);
                         return;
                     case 28:
-                        Type<Boolean> scoreboard = settings.scoreboard(settingPhase);
+                        Setting<Boolean> scoreboard = settings.scoreboard(settingPhase);
                         scoreboard.set(!scoreboard.get());
                         break;
                     case 29:
-                        Type<Boolean> actionBar = settings.actionBar(settingPhase);
+                        Setting<Boolean> actionBar = settings.actionBar(settingPhase);
                         actionBar.set(!actionBar.get());
                         break;
                     case 30:
-                        Type<Boolean> title = settings.title(settingPhase);
+                        Setting<Boolean> title = settings.title(settingPhase);
                         title.set(!title.get());
                         break;
                     case 31:
-                        Type<Boolean> notification = settings.notification(settingPhase);
+                        Setting<Boolean> notification = settings.notification(settingPhase);
                         notification.set(!notification.get());
                         break;
                     default:
@@ -155,11 +157,11 @@ public class CreationListener implements Listener {
                         openCommandAnvil(player);
                     } else if (event.isRightClick()) {
                         List<String> finishCommands = settings.finishCommands().get();
-                        String lastCommand = finishCommands.get(finishCommands.size() - 1);
-                        if (lastCommand == null) {
+                        if (finishCommands.isEmpty()) {
                             return;
                         }
 
+                        String lastCommand = finishCommands.get(finishCommands.size() - 1);
                         finishCommands.remove(lastCommand);
                         player.openInventory(createInventory.getInventory(Page.FINISH));
                         Messages.sendMessage(player, "election.finish_command.removed",
@@ -172,7 +174,7 @@ public class CreationListener implements Listener {
         }
     }
 
-    private void modifyIntegerSetting(InventoryClickEvent event, Type<Integer> setting) {
+    private void modifyIntegerSetting(InventoryClickEvent event, Setting<Integer> setting) {
         switch (event.getClick()) {
             case LEFT:
                 if ((setting.get() - 1) > 0) {

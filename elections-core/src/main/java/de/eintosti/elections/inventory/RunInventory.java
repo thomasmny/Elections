@@ -35,15 +35,19 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@NullMarked
 public class RunInventory {
 
     private final ElectionImpl election;
     private final Settings settings;
 
+    @Nullable
     private BukkitTask timeLeftTask;
 
     public RunInventory(ElectionsPlugin plugin) {
@@ -109,8 +113,8 @@ public class RunInventory {
             this.timeLeftTask = Bukkit.getScheduler().runTaskTimer(election.getPlugin(), () -> {
                 if (settings.countdown(PhaseType.NOMINATION).get() > 0) {
                     addTimeLeftItem(inventory);
-                } else {
-                    this.timeLeftTask.cancel();
+                } else if (timeLeftTask != null) {
+                    timeLeftTask.cancel();
                 }
             }, 0L, 5L);
         }

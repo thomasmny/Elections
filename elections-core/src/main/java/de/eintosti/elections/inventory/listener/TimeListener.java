@@ -20,7 +20,7 @@ package de.eintosti.elections.inventory.listener;
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.api.election.settings.Settings.Type;
+import de.eintosti.elections.api.election.settings.Settings.Setting;
 import de.eintosti.elections.election.ElectionSettings;
 import de.eintosti.elections.inventory.CreationInventory.Page;
 import de.eintosti.elections.messages.Messages;
@@ -29,7 +29,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class TimeListener implements Listener {
 
     private static final int PHASE_INFORMATION_SLOT = 13;
@@ -112,7 +114,7 @@ public class TimeListener implements Listener {
      * @param seconds The amount of seconds to increment the countdown by
      */
     private void modifyCountdown(PhaseType phase, Player player, int seconds) {
-        Type<Integer> countdown = settings.countdown(phase);
+        Setting<Integer> countdown = settings.countdown(phase);
         countdown.set(countdown.get() + seconds);
         XSound.ENTITY_ITEM_PICKUP.play(player);
         player.openInventory(plugin.getTimeInventory().getInventory(phase));

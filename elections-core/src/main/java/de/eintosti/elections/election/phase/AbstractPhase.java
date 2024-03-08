@@ -23,11 +23,13 @@ import de.eintosti.elections.api.election.phase.PhaseType;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * This class is an abstract implementation of the Phase interface.
  * It provides default implementations for some of the methods and defines abstract methods that must be implemented by subclasses.
  */
+@NullMarked
 public abstract class AbstractPhase implements Phase {
 
     @Override

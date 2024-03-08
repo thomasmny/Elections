@@ -26,9 +26,11 @@ import de.eintosti.elections.util.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Range;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
+@NullMarked
 public class TopFiveInventory {
 
     private final ElectionImpl election;

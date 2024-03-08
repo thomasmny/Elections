@@ -22,7 +22,9 @@ import de.eintosti.elections.util.InventoryUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class TopFiveListener implements Listener {
 
     @EventHandler

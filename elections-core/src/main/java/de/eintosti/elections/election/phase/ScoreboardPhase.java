@@ -32,6 +32,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +42,7 @@ import java.util.UUID;
 /**
  * A {@link Phase} which has a scoreboard showing important information.
  */
+@NullMarked
 public abstract class ScoreboardPhase extends CountdownPhase implements Listener {
 
     private final ElectionImpl election;
@@ -48,6 +51,7 @@ public abstract class ScoreboardPhase extends CountdownPhase implements Listener
 
     private final Map<UUID, FastBoard> scoreboards;
 
+    @Nullable
     private BukkitTask scoreboardTask;
 
     /**

@@ -17,6 +17,9 @@
  */
 package de.eintosti.elections.command.tabcomplete;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public interface Argument {
 
     /**

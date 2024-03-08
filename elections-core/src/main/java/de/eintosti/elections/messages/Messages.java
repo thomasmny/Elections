@@ -27,7 +27,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@NullMarked
 public final class Messages {
 
     private static final ElectionsPlugin PLUGIN = JavaPlugin.getPlugin(ElectionsPlugin.class);
@@ -49,7 +50,6 @@ public final class Messages {
      * @param tagResolvers The tag resolvers to apply extra tags from
      * @return The message as a component
      */
-    @NotNull
     public static Component getMessage(String key, TagResolver... tagResolvers) {
         String message = MessagesProvider.MESSAGES.get(key);
         if (message == null) {
@@ -68,7 +68,6 @@ public final class Messages {
      * @param tagResolvers The tag resolvers to apply extra tags from
      * @return The messages as a list of components
      */
-    @NotNull
     public static List<Component> getMessages(String key, TagResolver... tagResolvers) {
         String message = MessagesProvider.MESSAGES.get(key);
         if (message == null) {
@@ -107,7 +106,6 @@ public final class Messages {
      * @return The message a legacy string
      * @see #getMessage(String, TagResolver...)
      */
-    @NotNull
     public static String getString(String key, TagResolver... tagResolvers) {
         return LEGACY_SERIALIZER.serialize(getMessage(key, tagResolvers));
     }
@@ -121,7 +119,6 @@ public final class Messages {
      * @return The message a legacy string
      * @see #getMessages(String, TagResolver...)
      */
-    @NotNull
     public static List<String> getStringList(String key, TagResolver... tagResolvers) {
         List<Component> messages = getMessages(key, tagResolvers);
         return messages.stream()

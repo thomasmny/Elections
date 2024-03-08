@@ -34,11 +34,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@NullMarked
 public class VoteInventory extends PaginatedInventory {
 
     private static final int MAX_CANDIDATES = 9;
@@ -46,6 +49,7 @@ public class VoteInventory extends PaginatedInventory {
     private final ElectionImpl election;
     private final Settings settings;
 
+    @Nullable
     private BukkitTask timeLeftTask;
     private int numCandidates = 0;
 
@@ -117,8 +121,8 @@ public class VoteInventory extends PaginatedInventory {
             this.timeLeftTask = Bukkit.getScheduler().runTaskTimer(election.getPlugin(), () -> {
                 if (settings.countdown(PhaseType.VOTING).get() > 0) {
                     addTimeLeftItem(inventory);
-                } else {
-                    this.timeLeftTask.cancel();
+                } else if (timeLeftTask != null) {
+                    timeLeftTask.cancel();
                 }
             }, 0L, 5L);
         }

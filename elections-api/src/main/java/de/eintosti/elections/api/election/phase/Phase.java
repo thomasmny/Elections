@@ -19,10 +19,12 @@ package de.eintosti.elections.api.election.phase;
 
 import de.eintosti.elections.api.election.Election;
 import org.bukkit.event.Listener;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Phase interface represents a phase in the {@link Election}.
  */
+@NullMarked
 public interface Phase extends Listener {
 
     /**

@@ -17,10 +17,13 @@
  */
 package de.eintosti.elections.api;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public final class ElectionsProvider {
 
+    @Nullable
     private static Elections instance;
 
     /**
@@ -28,7 +31,7 @@ public final class ElectionsProvider {
      *
      * @return the Elections API instance
      */
-    public static @NotNull Elections get() {
+    public static Elections get() {
         Elections instance = ElectionsProvider.instance;
         if (instance == null) {
             throw new IllegalStateException("Elections has not loaded yet!");
@@ -36,7 +39,7 @@ public final class ElectionsProvider {
         return instance;
     }
 
-    static void set(Elections impl) {
+    static void set(final Elections impl) {
         ElectionsProvider.instance = impl;
     }
 

@@ -19,7 +19,9 @@ package de.eintosti.elections.config;
 
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.Election;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ElectionStorage extends ConfigurationFile {
 
     public ElectionStorage(ElectionsPlugin plugin) {

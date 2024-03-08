@@ -20,9 +20,11 @@ package de.eintosti.elections.api.election.settings;
 import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
+@NullMarked
 public interface Settings {
 
     /**
@@ -30,7 +32,7 @@ public interface Settings {
      *
      * @return The position for which candidates will be running
      */
-    Type<String> position();
+    Setting<String> position();
 
     /**
      * Get the amount of seconds left in the countdown for a given phase.
@@ -38,21 +40,21 @@ public interface Settings {
      * @param phase The phase
      * @return The seconds left in the countdown
      */
-    Type<Integer> countdown(PhaseType phase);
+    Setting<Integer> countdown(final PhaseType phase);
 
     /**
      * Get the maximum amount of characters a {@link Candidate}s status can be long.
      *
      * @return The maximum length of a candidate's status
      */
-    Type<Integer> maxStatusLength();
+    Setting<Integer> maxStatusLength();
 
     /**
      * Get the maximum amount of {@link Candidate}s that can participate in an {@link Election}.
      *
      * @return The maximum amount of candidates that can participate in an Election
      */
-    Type<Integer> maxCandidates();
+    Setting<Integer> maxCandidates();
 
     /**
      * Get whether the scoreboard is enabled for the given {@link Election} phase.
@@ -60,7 +62,7 @@ public interface Settings {
      * @param phase The phase
      * @return A boolean type whether the scoreboard is enabled
      */
-    Type<Boolean> scoreboard(PhaseType phase);
+    Setting<Boolean> scoreboard(final PhaseType phase);
 
     /**
      * Get whether the action-bar is used for displaying the remaining time in the given {@link Election} phase.
@@ -68,7 +70,7 @@ public interface Settings {
      * @param phase The phase
      * @return A boolean type whether the action-bar is enabled
      */
-    Type<Boolean> actionBar(PhaseType phase);
+    Setting<Boolean> actionBar(final PhaseType phase);
 
     /**
      * Get whether titles are used for notification for the given {@link Election} phase.
@@ -76,7 +78,7 @@ public interface Settings {
      * @param phase The phase
      * @return A boolean type whether title notification is enabled
      */
-    Type<Boolean> title(PhaseType phase);
+    Setting<Boolean> title(final PhaseType phase);
 
     /**
      * Get whether players receive a chat notification about the given {@link Election} phase.
@@ -84,18 +86,24 @@ public interface Settings {
      * @param phase The phase
      * @return A boolean type whether players receive a chat notification
      */
-    Type<Boolean> notification(PhaseType phase);
+    Setting<Boolean> notification(final PhaseType phase);
 
     /**
      * Gets whether the {@link Election} has a maximum candidate limit enabled.
      *
      * @return A boolean type whether the limit is enabled
      */
-    Type<Boolean> candidateLimitEnabled();
+    Setting<Boolean> candidateLimitEnabled();
 
-    Type<List<String>> finishCommands();
+    Setting<List<String>> finishCommands();
 
-    interface Type<T> {
+    /**
+     * A container for storing a setting.
+     *
+     * @param <T> The type of the setting
+     */
+    @NullMarked
+    interface Setting<T> {
 
         /**
          * Gets the current value.

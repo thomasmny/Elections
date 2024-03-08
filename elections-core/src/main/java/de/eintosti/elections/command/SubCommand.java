@@ -18,8 +18,10 @@
 package de.eintosti.elections.command;
 
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public interface SubCommand {
 
-    void execute(Player player, String[] args);
+    void execute(final Player player, final String[] args);
 }

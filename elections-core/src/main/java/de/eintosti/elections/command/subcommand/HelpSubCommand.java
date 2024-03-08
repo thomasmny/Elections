@@ -20,7 +20,9 @@ package de.eintosti.elections.command.subcommand;
 import de.eintosti.elections.command.SubCommand;
 import de.eintosti.elections.messages.Messages;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class HelpSubCommand implements SubCommand {
 
     @Override

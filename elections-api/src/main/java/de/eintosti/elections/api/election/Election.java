@@ -22,13 +22,14 @@ import de.eintosti.elections.api.election.phase.Phase;
 import de.eintosti.elections.api.election.settings.Settings;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@NullMarked
 public interface Election extends ConfigurationSerializable {
 
     Settings getSettings();
@@ -44,25 +45,25 @@ public interface Election extends ConfigurationSerializable {
     void cancelElection();
 
     @Nullable
-    Candidate getCandidate(UUID uuid);
+    Candidate getCandidate(final UUID uuid);
 
     @Nullable
-    Candidate getCandidate(String name);
+    Candidate getCandidate(final String name);
 
     Map<UUID, Candidate> getNominations();
 
-    void addNomination(Candidate candidate);
+    void addNomination(final Candidate candidate);
 
-    void removeNomination(Candidate candidate);
+    void removeNomination(final Candidate candidate);
 
-    boolean isNominated(UUID uuid);
+    boolean isNominated(final UUID uuid);
 
     @Nullable
-    Candidate getVote(Player voter);
+    Candidate getVote(final Player voter);
 
-    boolean hasVotedFor(Player player, @NotNull Candidate candidate);
+    boolean hasVotedFor(final Player player, final Candidate candidate);
 
-    void voteFor(Player voter, String candidateName);
+    void voteFor(final Player voter, final String candidateName);
 
     Map<UUID, Integer> getCandidateVotes();
 

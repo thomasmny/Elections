@@ -29,16 +29,18 @@ import de.eintosti.elections.messages.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@NullMarked
 public class ElectionImpl implements Election {
 
     private final ElectionsPlugin plugin;
@@ -57,7 +59,8 @@ public class ElectionImpl implements Election {
         this.votes = new HashMap<>();
         this.candidateVoteCount = new HashMap<>();
 
-        load();
+        this.settings = new ElectionSettings();
+        this.phase = new SetupPhase(plugin);
     }
 
     public JavaPlugin getPlugin() {
@@ -81,7 +84,7 @@ public class ElectionImpl implements Election {
 
     @Override
     public void start() {
-        if (phase != null && phase.getPhaseType() != PhaseType.SETUP) {
+        if (phase.getPhaseType() != PhaseType.SETUP) {
             phase.finish();
         }
         phase = new SetupPhase(plugin);
@@ -93,9 +96,7 @@ public class ElectionImpl implements Election {
         phase.finish();
 
         this.phase = phase.getNextPhase();
-        if (phase != null) {
-            phase.start();
-        }
+        phase.start();
     }
 
     @Override
@@ -164,7 +165,7 @@ public class ElectionImpl implements Election {
     }
 
     @Override
-    public boolean hasVotedFor(Player player, @NotNull Candidate candidate) {
+    public boolean hasVotedFor(Player player, Candidate candidate) {
         Candidate vote = getVote(player);
         if (vote == null) {
             return false;
@@ -212,7 +213,7 @@ public class ElectionImpl implements Election {
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(5)
-                .map(entry -> getCandidate(entry.getKey()))
+                .map(entry -> Objects.requireNonNull(getCandidate(entry.getKey())))
                 .collect(Collectors.toList());
 
     }
@@ -223,7 +224,7 @@ public class ElectionImpl implements Election {
     }
 
     @Override
-    public @NotNull Map<String, Object> serialize() {
+    public Map<String, Object> serialize() {
         Map<String, Object> election = new HashMap<>();
 
         election.put("settings", settings.serialize());

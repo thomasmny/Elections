@@ -18,9 +18,11 @@
 package de.eintosti.elections.command.tabcomplete;
 
 import de.eintosti.elections.util.external.StringUtils;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
+@NullMarked
 abstract class ArgumentSorter {
 
     public void addArgument(String input, String argument, List<String> arrayList) {

@@ -27,11 +27,13 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@NullMarked
 public class NominationPhase extends ScoreboardPhase {
 
     private final ElectionsPlugin plugin;

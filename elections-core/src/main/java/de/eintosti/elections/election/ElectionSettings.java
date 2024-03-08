@@ -20,54 +20,51 @@ package de.eintosti.elections.election;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.election.settings.Settings;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+@NullMarked
 public class ElectionSettings implements Settings, ConfigurationSerializable {
 
-    private final Map<String, DataType<?>> data = new HashMap<>();
+    private final Map<String, ElectionSetting<?>> data = new HashMap<>();
 
-    private final DataType<String> position = register("position");
+    private final ElectionSetting<String> position = register("position", "Mayor");
 
-    private final DataType<Integer> nominationCountdown = register("nomination-countdown");
-    private final DataType<Integer> votingCountdown = register("voting-countdown");
-    private final DataType<Integer> maxStatusLength = register("max-status-length");
-    private final DataType<Integer> maxCandidates = register("max-candidates");
+    private final ElectionSetting<Integer> nominationCountdown = register("nomination-countdown", 1800);
+    private final ElectionSetting<Integer> votingCountdown = register("voting-countdown", 1800);
+    private final ElectionSetting<Integer> maxStatusLength = register("max-status-length", 24);
+    private final ElectionSetting<Integer> maxCandidates = register("max-candidates", 16);
 
-    private final DataType<Boolean> nominationScoreboard = register("nomination-scoreboard");
-    private final DataType<Boolean> nominationActionBar = register("nomination-actionbar");
-    private final DataType<Boolean> nominationTitle = register("nomination-title");
-    private final DataType<Boolean> nominationNotification = register("nomination-notification");
+    private final ElectionSetting<Boolean> nominationScoreboard = register("nomination-scoreboard", true);
+    private final ElectionSetting<Boolean> nominationActionBar = register("nomination-actionbar", true);
+    private final ElectionSetting<Boolean> nominationTitle = register("nomination-title", true);
+    private final ElectionSetting<Boolean> nominationNotification = register("nomination-notification", true);
 
-    private final DataType<Boolean> votingScoreboard = register("voting-scoreboard");
-    private final DataType<Boolean> votingActionBar = register("voting-actionbar");
-    private final DataType<Boolean> votingTitle = register("voting-title");
-    private final DataType<Boolean> votingNotification = register("voting-notification");
+    private final ElectionSetting<Boolean> votingScoreboard = register("voting-scoreboard", true);
+    private final ElectionSetting<Boolean> votingActionBar = register("voting-actionbar", true);
+    private final ElectionSetting<Boolean> votingTitle = register("voting-title", true);
+    private final ElectionSetting<Boolean> votingNotification = register("voting-notification", true);
 
-    private final DataType<Boolean> candidateLimitEnabled = register("candidate-limit-enabled");
+    private final ElectionSetting<Boolean> candidateLimitEnabled = register("candidate-limit-enabled", false);
 
-    private final DataType<List<String>> finishCommands = register("finish-commands");
+    private final ElectionSetting<List<String>> finishCommands = register("finish-commands", new ArrayList<>());
 
-    public <T> DataType<T> register(@NotNull String key) {
-        return register(key, new DataType<>());
+    public <T> ElectionSetting<T> register(String key, T defaultValue) {
+        return register(key, new ElectionSetting<>(defaultValue));
     }
 
-    public <T> DataType<T> register(@NotNull String key, DataType<T> type) {
+    public <T> ElectionSetting<T> register(String key, ElectionSetting<T> type) {
         this.data.put(key, type);
         return type;
     }
 
     public ElectionSettings() {
-        this("Mayor", 1800, 1800, 24, 16,
-                true, true, true, true,
-                true, true, true, true,
-                false, new ArrayList<>()
-        );
     }
 
     public ElectionSettings(
@@ -107,14 +104,13 @@ public class ElectionSettings implements Settings, ConfigurationSerializable {
         this.finishCommands.set(finishCommands);
     }
 
-
     @Override
-    public Type<String> position() {
+    public Setting<String> position() {
         return position;
     }
 
     @Override
-    public Type<Integer> countdown(PhaseType phase) {
+    public Setting<Integer> countdown(PhaseType phase) {
         switch (phase) {
             case NOMINATION:
                 return nominationCountdown;
@@ -126,17 +122,17 @@ public class ElectionSettings implements Settings, ConfigurationSerializable {
     }
 
     @Override
-    public Type<Integer> maxStatusLength() {
+    public Setting<Integer> maxStatusLength() {
         return maxStatusLength;
     }
 
     @Override
-    public Type<Integer> maxCandidates() {
+    public Setting<Integer> maxCandidates() {
         return maxCandidates;
     }
 
     @Override
-    public Type<Boolean> scoreboard(PhaseType phase) {
+    public Setting<Boolean> scoreboard(PhaseType phase) {
         switch (phase) {
             case NOMINATION:
                 return nominationScoreboard;
@@ -148,7 +144,7 @@ public class ElectionSettings implements Settings, ConfigurationSerializable {
     }
 
     @Override
-    public Type<Boolean> actionBar(PhaseType phase) {
+    public Setting<Boolean> actionBar(PhaseType phase) {
         switch (phase) {
             case NOMINATION:
                 return nominationActionBar;
@@ -160,7 +156,7 @@ public class ElectionSettings implements Settings, ConfigurationSerializable {
     }
 
     @Override
-    public Type<Boolean> title(PhaseType phase) {
+    public Setting<Boolean> title(PhaseType phase) {
         switch (phase) {
             case NOMINATION:
                 return nominationTitle;
@@ -172,7 +168,7 @@ public class ElectionSettings implements Settings, ConfigurationSerializable {
     }
 
     @Override
-    public Type<Boolean> notification(PhaseType phase) {
+    public Setting<Boolean> notification(PhaseType phase) {
         switch (phase) {
             case NOMINATION:
                 return nominationNotification;
@@ -184,25 +180,32 @@ public class ElectionSettings implements Settings, ConfigurationSerializable {
     }
 
     @Override
-    public Type<Boolean> candidateLimitEnabled() {
+    public Setting<Boolean> candidateLimitEnabled() {
         return candidateLimitEnabled;
     }
 
     @Override
-    public Type<List<String>> finishCommands() {
+    public Setting<List<String>> finishCommands() {
         return finishCommands;
     }
 
     @Override
-    public @NotNull Map<String, Object> serialize() {
+    public Map<String, Object> serialize() {
         return data.entrySet().stream()
-                .filter(entry -> entry.getValue().get() != null)
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getConfigFormat()));
+                .collect(Collectors.toMap(
+                        Entry::getKey,
+                        entry -> entry.getValue().getConfigFormat())
+                );
     }
 
-    public static class DataType<T> implements Type<T> {
+    @NullMarked
+    public static class ElectionSetting<T> implements Setting<T> {
 
         private T value;
+
+        public ElectionSetting(T defaultValue) {
+            this.value = defaultValue;
+        }
 
         @Override
         public T get() {

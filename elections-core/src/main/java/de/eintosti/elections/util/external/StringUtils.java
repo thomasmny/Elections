@@ -17,8 +17,12 @@
  */
 package de.eintosti.elections.util.external;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import java.util.Iterator;
 
+@NullMarked
 public class StringUtils {
 
     public static String formatTime(int seconds) {
@@ -47,7 +51,7 @@ public class StringUtils {
      * @since 2.4
      * @since 3.0 Changed signature from startsWithIgnoreCase(String, String) to startsWithIgnoreCase(CharSequence, CharSequence)
      */
-    public static boolean startsWithIgnoreCase(final CharSequence str, final CharSequence prefix) {
+    public static boolean startsWithIgnoreCase(@Nullable final CharSequence str, @Nullable final CharSequence prefix) {
         if (str == null || prefix == null) {
             return str == prefix;
         }
@@ -135,7 +139,7 @@ public class StringUtils {
      * @param separator the separator character to use, null treated as ""
      * @return the joined String, {@code null} if null iterator input
      */
-    public static String join(final Iterator<?> iterator, final String separator) {
+    public static String join(final Iterator<?> iterator, @Nullable final String separator) {
         if (!iterator.hasNext()) {
             return "";
         }

@@ -30,6 +30,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@NullMarked
 public class FinishPhase extends AbstractPhase {
 
     private final ElectionsPlugin plugin;
@@ -84,7 +86,13 @@ public class FinishPhase extends AbstractPhase {
                 winningCount = numberOfVotes;
             }
 
-            winners.add(election.getCandidate(entry.getKey()));
+            Candidate winner = election.getCandidate(entry.getKey());
+            if (winner == null) {
+                plugin.getLogger().severe("Could not find candidate with uuid " + entry.getKey());
+                continue;
+            }
+
+            winners.add(winner);
         }
     }
 

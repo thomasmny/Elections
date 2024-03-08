@@ -18,6 +18,7 @@
 package de.eintosti.elections.api.election.phase;
 
 import de.eintosti.elections.api.election.Election;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * The different {@link Phase}s of an {@link Election}.
@@ -32,6 +33,7 @@ import de.eintosti.elections.api.election.Election;
  * </ul>
  * Each phase has a specific purpose and behavior within the election process.
  */
+@NullMarked
 public enum PhaseType {
 
     /**
