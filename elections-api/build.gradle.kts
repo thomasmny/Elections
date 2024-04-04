@@ -37,7 +37,7 @@ tasks {
 publishing {
     repositories {
         maven {
-            name = "Elections"
+            name = "reposolite"
             url = if (project.version.toString().endsWith("-SNAPSHOT")) {
                 uri("https://repo.eintosti.de/snapshots")
             } else {

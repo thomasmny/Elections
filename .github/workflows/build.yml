@@ -1,4 +1,4 @@
-name: Build main
+name: Build
 
 on: [ push, pull_request ]
 
@@ -9,7 +9,6 @@ jobs:
       matrix:
         java: [ 17 ]
       fail-fast: true
-
     steps:
       - name: Checkout Git Repository
         uses: actions/checkout@v4.1.1
@@ -28,3 +27,10 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew clean build
+
+      - name: Publish to Reposolite
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        run: ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_reposoliteUsername: ${{ secrets.REPOSOLITE_USERNAME }}
+          ORG_GRADLE_PROJECT_reposolitePassword: ${{ secrets.REPOSOLITE_PASSWORD }}
