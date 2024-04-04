@@ -22,6 +22,9 @@ import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
+import de.eintosti.elections.api.event.election.ElectionCancelEvent;
+import de.eintosti.elections.api.event.election.ElectionNextPhaseEvent;
+import de.eintosti.elections.api.event.election.ElectionStartEvent;
 import de.eintosti.elections.election.candidate.ElectionCandidate;
 import de.eintosti.elections.election.phase.AbstractPhase;
 import de.eintosti.elections.election.phase.FinishPhase;
@@ -125,20 +128,31 @@ public class ElectionImpl implements Election {
         }
 
         this.currentPhase = new SetupPhase(plugin, this);
+
+        ElectionStartEvent event = new ElectionStartEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
+
         startNextPhase();
     }
 
     @Override
     public void startNextPhase() {
-        currentPhase.finish();
+        AbstractPhase oldPhase = currentPhase;
+        oldPhase.finish();
 
         currentPhase = currentPhase.getNextPhase();
         currentPhase.start();
+
+        ElectionNextPhaseEvent event = new ElectionNextPhaseEvent(this, oldPhase.getPhaseType(), currentPhase.getPhaseType());
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     @Override
     public void cancelElection() {
         prematureStop();
+
+        ElectionCancelEvent event = new ElectionCancelEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
 
         Bukkit.getOnlinePlayers().forEach(pl -> {
             Messages.sendMessage(pl, "election.cancel.success");

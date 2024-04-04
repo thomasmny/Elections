@@ -20,6 +20,9 @@ package de.eintosti.elections.api;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * {@link ElectionsProvider} is a singleton class that provides access to the Elections API.
+ */
 @NullMarked
 public final class ElectionsProvider {
 

@@ -30,6 +30,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The Election interface defines the properties and behaviors of an election.
+ */
 @NullMarked
 public interface Election extends ConfigurationSerializable {
 

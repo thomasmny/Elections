@@ -17,39 +17,54 @@
  */
 package de.eintosti.elections.api.election.candidate;
 
+import de.eintosti.elections.api.election.Election;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.entity.Player;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
 /**
- * The Candidate interface defines the properties and behaviors of a candidate in an election.
+ * The Candidate interface defines the properties and behaviors of a candidate in an {@link Election}.
  */
 @NullMarked
 public interface Candidate extends ConfigurationSerializable {
 
     /**
      * Retrieves the name of the candidate.
+     * <p>
+     * Should be equivalent to the wrapped {@link Player}'s name.
      *
      * @return The name of the candidate
+     * @see Player#getName()
      */
     String getName();
 
     /**
      * Retrieves the unique identifier of the candidate.
+     * <p>
+     * Should be equivalent to the wrapped {@link Player}'s UUID.
      *
      * @return The unique identifier of the candidate
+     * @see Player#getUniqueId()
      */
     UUID getUniqueId();
 
     /**
      * Retrieves the status of the candidate.
      *
-     * @return The status of the candidate, or null if no status is set
+     * @return The status of the candidate, or {@code null} if no status is set
      */
     @Nullable
     String getStatus();
+
+    /**
+     * Sets the status of the candidate.
+     *
+     * @param status The new status of the candidate
+     */
+    void setStatus(@Nullable String status);
 
     /**
      * Checks if the candidate has a status set.
@@ -85,11 +100,4 @@ public interface Candidate extends ConfigurationSerializable {
      * @param amount The amount of votes to remove
      */
     void removeVotes(int amount);
-
-    /**
-     * Sets the status of the candidate.
-     *
-     * @param status The new status of the candidate
-     */
-    void setStatus(@Nullable String status);
 }

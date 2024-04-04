@@ -24,6 +24,9 @@ import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
+/**
+ * Settings interface provides a way to access and modify the settings of an {@link Election}.
+ */
 @NullMarked
 public interface Settings {
 

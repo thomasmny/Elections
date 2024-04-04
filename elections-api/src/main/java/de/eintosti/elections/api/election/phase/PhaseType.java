@@ -81,6 +81,12 @@ public enum PhaseType {
      */
     FINISHED;
 
+    /**
+     * Retrieves the {@link PhaseType} from the given key.
+     *
+     * @param key The key to retrieve the phase from
+     * @return The phase type, or {@code null} if the key is invalid
+     */
     @Nullable
     public static PhaseType fromString(@Nullable String key) {
         if (key == null) {

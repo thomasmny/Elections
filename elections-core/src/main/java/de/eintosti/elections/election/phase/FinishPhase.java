@@ -22,6 +22,7 @@ import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
+import de.eintosti.elections.api.event.election.ElectionFinishEvent;
 import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.external.StringUtils;
@@ -69,8 +70,12 @@ public class FinishPhase extends AbstractPhase {
     @Override
     public void onStart() {
         findWinners();
-        notifyAllPlayers();
         preformFinishCommands();
+
+        ElectionFinishEvent event = new ElectionFinishEvent(election, winners);
+        Bukkit.getPluginManager().callEvent(event);
+
+        notifyAllPlayers();
     }
 
     private void findWinners() {
@@ -141,8 +146,8 @@ public class FinishPhase extends AbstractPhase {
         String winnerNames = StringUtils.join(winners.stream().map(Candidate::getName).collect(Collectors.toList()), ", ");
         Messages.sendMessage(player, wasOffline
                         ? "election.finished.offline.winner.multiple"
-                        : "election.finished.online.winner.multiple"
-                , Placeholder.unparsed("winners", winnerNames)
+                        : "election.finished.online.winner.multiple",
+                Placeholder.unparsed("winners", winnerNames)
         );
     }
 
