@@ -22,6 +22,8 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @NullMarked
@@ -32,10 +34,18 @@ public class ElectionCandidate implements Candidate, Serializable {
 
     @Nullable
     private String status;
+    private int votes;
 
-    public ElectionCandidate(UUID uuid, String name) {
+    public ElectionCandidate(UUID uuid, String name, @Nullable String status, int votes) {
         this.uuid = uuid;
         this.name = name;
+
+        this.status = status;
+        this.votes = 0;
+    }
+
+    public ElectionCandidate(UUID uuid, String name) {
+        this(uuid, name, null, 0);
     }
 
     @Override
@@ -64,6 +74,26 @@ public class ElectionCandidate implements Candidate, Serializable {
     }
 
     @Override
+    public int getVotes() {
+        return votes;
+    }
+
+    @Override
+    public void setVotes(int amount) {
+        this.votes = amount;
+    }
+
+    @Override
+    public void addVotes(int amount) {
+        this.votes += amount;
+    }
+
+    @Override
+    public void removeVotes(int amount) {
+        this.votes -= amount;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Candidate)) {
             return false;
@@ -71,5 +101,18 @@ public class ElectionCandidate implements Candidate, Serializable {
 
         Candidate other = (Candidate) obj;
         return this.uuid.equals(other.getUniqueId());
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> candidate = new HashMap<>();
+
+        candidate.put("name", name);
+        if (status != null) {
+            candidate.put("status", status);
+        }
+        candidate.put("votes", votes);
+
+        return candidate;
     }
 }

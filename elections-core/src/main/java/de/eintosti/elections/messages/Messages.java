@@ -18,7 +18,6 @@
 package de.eintosti.elections.messages;
 
 import de.eintosti.elections.ElectionsPlugin;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -134,18 +133,23 @@ public final class Messages {
      * @param tagResolvers The tag resolvers to apply extra tags from
      */
     public static void sendMessage(CommandSender sender, String key, TagResolver... tagResolvers) {
-        try (BukkitAudiences audiences = PLUGIN.adventure()) {
-            Component message = getMessage(key, tagResolvers);
-            audiences.sender(sender).sendMessage(message);
-        }
+        Component message = getMessage(key, tagResolvers);
+        PLUGIN.adventure().sender(sender).sendMessage(message);
     }
 
+    /**
+     * Shows a title to the given sender.
+     *
+     * @param sender       The sender
+     * @param titleKey     The key of the title
+     * @param subtitleKey  The key of the subtitle
+     * @param tagResolvers THe tag resolvers to apply extra tags from
+     */
     public static void sendTitle(CommandSender sender, String titleKey, String subtitleKey, TagResolver... tagResolvers) {
-        try (BukkitAudiences audiences = PLUGIN.adventure()) {
-            audiences.sender(sender).showTitle(Title.title(
-                    getMessage(titleKey, tagResolvers),
-                    getMessage(subtitleKey, tagResolvers)
-            ));
-        }
+        Title title = Title.title(
+                getMessage(titleKey, tagResolvers),
+                getMessage(subtitleKey, tagResolvers)
+        );
+        PLUGIN.adventure().sender(sender).showTitle(title);
     }
 }

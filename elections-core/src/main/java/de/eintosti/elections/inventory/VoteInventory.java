@@ -72,7 +72,7 @@ public class VoteInventory extends PaginatedInventory {
     }
 
     private void addCandidates(Player player) {
-        List<Candidate> candidates = new ArrayList<>(election.getNominations().values());
+        List<Candidate> candidates = new ArrayList<>(election.getCandidates());
         candidates.sort(Comparator.comparing(candidate -> candidate.getName().toLowerCase()));
         this.numCandidates = candidates.size();
         int numInventories = (numCandidates % MAX_CANDIDATES == 0 ? numCandidates : numCandidates + 1) != 0 ? (numCandidates % MAX_CANDIDATES == 0 ? numCandidates : numCandidates + 1) : 1;

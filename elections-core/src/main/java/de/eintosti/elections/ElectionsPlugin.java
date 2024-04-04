@@ -56,13 +56,11 @@ public class ElectionsPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Elections api = new ElectionsApi();
-        getServer().getServicesManager().register(Elections.class, api, this, ServicePriority.Normal);
-        ElectionsApi.register(api);
+        registerApi();
 
         this.adventure = BukkitAudiences.create(this);
         this.storage = new ElectionStorage(this);
-        this.election = new ElectionImpl(this);
+        this.election = storage.loadElection();
 
         this.creationInventory = new CreationInventory(this);
         this.runInventory = new RunInventory(this);
@@ -73,6 +71,12 @@ public class ElectionsPlugin extends JavaPlugin {
         new ElectionsCommand(this);
 
         new Metrics(this, METRICS_ID);
+    }
+
+    private void registerApi() {
+        Elections api = new ElectionsApi();
+        getServer().getServicesManager().register(Elections.class, api, this, ServicePriority.Normal);
+        ElectionsApi.register(api);
     }
 
     @Override
@@ -95,8 +99,8 @@ public class ElectionsPlugin extends JavaPlugin {
     }
 
     public void resetElection() {
-        this.election.getPhase().finish();
-        this.election = new ElectionImpl(this);
+        this.election.getCurrentPhase().finish();
+        this.election = ElectionImpl.init();
     }
 
     public ElectionImpl getElection() {

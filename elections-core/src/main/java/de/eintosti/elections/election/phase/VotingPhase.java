@@ -21,7 +21,6 @@ import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.election.ElectionImpl;
-import de.eintosti.elections.election.ElectionSettings;
 import de.eintosti.elections.messages.Messages;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
@@ -33,27 +32,23 @@ import org.jspecify.annotations.NullMarked;
 public class VotingPhase extends ScoreboardPhase {
 
     private final ElectionsPlugin plugin;
-    private final ElectionImpl election;
-    private final ElectionSettings settings;
 
-    public VotingPhase(ElectionsPlugin plugin) {
-        super(plugin.getElection(), PhaseType.VOTING);
+    public VotingPhase(ElectionsPlugin plugin, ElectionImpl election) {
+        super(election, PhaseType.VOTING);
 
         this.plugin = plugin;
-        this.election = plugin.getElection();
-        this.settings = election.getSettings();
     }
 
     @Override
     public AbstractPhase getNextPhase() {
-        return new FinishPhase(plugin);
+        return new FinishPhase(plugin, election);
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        if (election.getNominations().isEmpty()) {
+        if (election.getCandidates().isEmpty()) {
             election.prematureStop();
             Bukkit.getOnlinePlayers().forEach(pl -> {
                 Messages.sendMessage(pl, "election.voting.no_players");

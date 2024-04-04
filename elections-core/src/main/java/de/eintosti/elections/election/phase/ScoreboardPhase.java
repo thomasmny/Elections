@@ -28,7 +28,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -43,10 +42,10 @@ import java.util.UUID;
  * A {@link Phase} which has a scoreboard showing important information.
  */
 @NullMarked
-public abstract class ScoreboardPhase extends CountdownPhase implements Listener {
+public abstract class ScoreboardPhase extends CountdownPhase {
 
-    private final ElectionImpl election;
-    private final ElectionSettings settings;
+    protected final ElectionImpl election;
+    protected final ElectionSettings settings;
     private final PhaseType phaseType;
 
     private final Map<UUID, FastBoard> scoreboards;
@@ -97,7 +96,7 @@ public abstract class ScoreboardPhase extends CountdownPhase implements Listener
         Bukkit.getOnlinePlayers().forEach(this::setScoreboard);
         this.scoreboardTask = Bukkit.getScheduler().runTaskTimerAsynchronously(election.getPlugin(), () -> {
             scoreboards.values().forEach(this::updateBoard);
-        }, 0, 20);
+        }, 0L, 20L);
     }
 
     /**
@@ -158,12 +157,12 @@ public abstract class ScoreboardPhase extends CountdownPhase implements Listener
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void setPlayerScoreboard(PlayerJoinEvent event) {
         setScoreboard(event.getPlayer());
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void removePlayerScoreboard(PlayerQuitEvent event) {
         removeScoreboard(event.getPlayer());
     }
 }

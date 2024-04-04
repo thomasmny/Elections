@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 import java.lang.reflect.Method;
 
 /**
- * Copied from <a><a href="https://github.com/lucko/spark/blob/aafc582149874584591def376c5a47de87c2a489/spark-common/src/main/java/me/lucko/spark/common/api/SparkApi.java">Spark</a></a>
+ * Copied from <a href="https://github.com/lucko/spark/blob/aafc582149874584591def376c5a47de87c2a489/spark-common/src/main/java/me/lucko/spark/common/api/SparkApi.java">Spark</a>
  *
  * @author lucko
  */

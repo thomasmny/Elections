@@ -34,7 +34,6 @@ import org.jspecify.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,9 +47,9 @@ public class FinishPhase extends AbstractPhase {
     private final List<UUID> notified;
     private int winningCount = 0;
 
-    public FinishPhase(ElectionsPlugin plugin) {
+    public FinishPhase(ElectionsPlugin plugin, ElectionImpl election) {
         this.plugin = plugin;
-        this.election = plugin.getElection();
+        this.election = election;
 
         this.winners = new ArrayList<>();
         this.notified = new ArrayList<>();
@@ -64,7 +63,7 @@ public class FinishPhase extends AbstractPhase {
     @Override
     public AbstractPhase getNextPhase() {
         plugin.resetElection();
-        return plugin.getElection().getPhase();
+        return plugin.getElection().getCurrentPhase();
     }
 
     @Override
@@ -75,8 +74,8 @@ public class FinishPhase extends AbstractPhase {
     }
 
     private void findWinners() {
-        for (Map.Entry<UUID, Integer> entry : election.getCandidateVotes().entrySet()) {
-            int numberOfVotes = entry.getValue();
+        for (Candidate candidate : election.getCandidates()) {
+            int numberOfVotes = candidate.getVotes();
             if (numberOfVotes < winningCount || numberOfVotes == 0) {
                 continue;
             }
@@ -86,13 +85,7 @@ public class FinishPhase extends AbstractPhase {
                 winningCount = numberOfVotes;
             }
 
-            Candidate winner = election.getCandidate(entry.getKey());
-            if (winner == null) {
-                plugin.getLogger().severe("Could not find candidate with uuid " + entry.getKey());
-                continue;
-            }
-
-            winners.add(winner);
+            winners.add(candidate);
         }
     }
 
@@ -135,10 +128,12 @@ public class FinishPhase extends AbstractPhase {
         }
 
         if (winners.size() == 1) {
+            Candidate winner = winners.get(0);
             Messages.sendMessage(player, wasOffline
                             ? "election.finished.offline.winner.single"
-                            : "election.finished.online.winner.single"
-                    , Placeholder.unparsed("winner", winners.get(0).getName())
+                            : "election.finished.online.winner.single",
+                    Placeholder.unparsed("winner", winner.getName()),
+                    Placeholder.unparsed("votes", String.valueOf(winner.getVotes()))
             );
             return;
         }

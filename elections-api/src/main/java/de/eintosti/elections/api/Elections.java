@@ -23,5 +23,10 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public interface Elections {
 
+    /**
+     * Gets the election.
+     *
+     * @return The election
+     */
     Election getElection();
 }

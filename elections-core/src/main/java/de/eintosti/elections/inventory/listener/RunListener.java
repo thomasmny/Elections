@@ -54,11 +54,11 @@ public class RunListener implements Listener {
         }
 
         Player player = (Player) event.getWhoClicked();
-        Candidate candidate = election.getOrCreateCandidate(player);
         if (!player.hasPermission("elections.run")) {
             return;
         }
 
+        Candidate candidate = election.getOrCreateCandidate(player);
         switch (event.getSlot()) {
             case 10:
                 if (!election.isNominated(candidate.getUniqueId())) {
@@ -82,10 +82,10 @@ public class RunListener implements Listener {
             case 16:
                 TagResolver position = Placeholder.unparsed("position", settings.position().get());
                 if (election.isNominated(candidate.getUniqueId())) {
-                    election.removeNomination(candidate);
+                    election.withdraw(candidate);
                     Messages.sendMessage(player, "election.run.stop", position);
                 } else {
-                    election.addNomination(candidate);
+                    election.nominate(candidate);
                     Messages.sendMessage(player, "election.run.start", position);
                 }
                 player.closeInventory();

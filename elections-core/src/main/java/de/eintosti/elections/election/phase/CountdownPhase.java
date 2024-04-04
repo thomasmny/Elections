@@ -20,6 +20,7 @@ package de.eintosti.elections.election.phase;
 import com.cryptomorin.xseries.messages.ActionBar;
 import de.eintosti.elections.api.election.phase.Phase;
 import de.eintosti.elections.api.election.phase.PhaseType;
+import de.eintosti.elections.api.election.settings.Settings.Setting;
 import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.election.ElectionSettings;
 import de.eintosti.elections.messages.Messages;
@@ -44,14 +45,14 @@ public abstract class CountdownPhase extends AbstractPhase {
 
     @Nullable
     private BukkitTask countdownTask;
-    private int countdown;
+    private final Setting<Integer> countdown;
 
     public CountdownPhase(ElectionImpl election, PhaseType phase) {
         this.election = election;
         this.settings = election.getSettings();
         this.phase = phase;
 
-        this.countdown = settings.countdown(phase).get();
+        this.countdown = settings.countdown(phase);
     }
 
     @Override
@@ -63,18 +64,24 @@ public abstract class CountdownPhase extends AbstractPhase {
     public abstract AbstractPhase getNextPhase();
 
     public int getRemainingTime() {
-        return countdown;
+        return countdown.get();
     }
 
     @Override
     public void onStart() {
         sendActionBarTimer();
+        initCountdown();
+    }
 
+    /**
+     * Initializes the countdown task.
+     */
+    public void initCountdown() {
         this.countdownTask = Bukkit.getScheduler().runTaskTimer(election.getPlugin(), () -> {
-            this.countdown--;
+            this.countdown.set(getRemainingTime() - 1);
             sendActionBarTimer();
 
-            if (countdown <= 0) {
+            if (getRemainingTime() <= 0) {
                 if (countdownTask != null) {
                     countdownTask.cancel();
                 }
@@ -91,7 +98,7 @@ public abstract class CountdownPhase extends AbstractPhase {
         String phaseKey = phase.name().toLowerCase(Locale.ROOT);
         Bukkit.getOnlinePlayers().forEach(pl -> ActionBar.sendActionBar(pl,
                 Messages.getString("election." + phaseKey + ".actionbar",
-                        Placeholder.unparsed("time", StringUtils.formatTime(countdown))
+                        Placeholder.unparsed("time", StringUtils.formatTime(getRemainingTime()))
                 ))
         );
     }

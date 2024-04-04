@@ -24,19 +24,23 @@ import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.election.candidate.ElectionCandidate;
 import de.eintosti.elections.election.phase.AbstractPhase;
+import de.eintosti.elections.election.phase.FinishPhase;
+import de.eintosti.elections.election.phase.NominationPhase;
 import de.eintosti.elections.election.phase.SetupPhase;
+import de.eintosti.elections.election.phase.VotingPhase;
 import de.eintosti.elections.messages.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Unmodifiable;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -44,23 +48,55 @@ import java.util.stream.Collectors;
 public class ElectionImpl implements Election {
 
     private final ElectionsPlugin plugin;
+    private final ElectionSettings settings;
 
     private final Map<UUID, Candidate> nominations;
     private final Map<UUID, Candidate> votes;
-    private final Map<UUID, Integer> candidateVoteCount;
 
-    private ElectionSettings settings;
-    private AbstractPhase phase;
+    private AbstractPhase currentPhase;
 
-    public ElectionImpl(ElectionsPlugin plugin) {
-        this.plugin = plugin;
+    public static ElectionImpl init() {
+        return new ElectionImpl(new ElectionSettings(), new HashMap<>(), new HashMap<>(), PhaseType.SETUP);
+    }
 
-        this.nominations = new HashMap<>();
-        this.votes = new HashMap<>();
-        this.candidateVoteCount = new HashMap<>();
+    public static ElectionImpl unfreeze(
+            ElectionSettings settings,
+            Map<UUID, Candidate> nominations,
+            Map<UUID, Candidate> votes,
+            PhaseType currentPhase
+    ) {
+        return new ElectionImpl(settings, nominations, votes, currentPhase);
+    }
 
-        this.settings = new ElectionSettings();
-        this.phase = new SetupPhase(plugin);
+    private ElectionImpl(
+            ElectionSettings settings,
+            Map<UUID, Candidate> nominations,
+            Map<UUID, Candidate> votes,
+            PhaseType currentPhase
+    ) {
+        this.plugin = JavaPlugin.getPlugin(ElectionsPlugin.class);
+        this.settings = settings;
+
+        this.nominations = nominations;
+        this.votes = votes;
+
+        switch (currentPhase) {
+            case SETUP:
+                this.currentPhase = new SetupPhase(plugin, this);
+                break;
+            case NOMINATION:
+                this.currentPhase = new NominationPhase(plugin, this);
+                break;
+            case VOTING:
+                this.currentPhase = new VotingPhase(plugin, this);
+                break;
+            case FINISHED:
+                this.currentPhase = new FinishPhase(plugin, this);
+                break;
+            default:
+                throw new IllegalArgumentException("Could not find phase for '" + currentPhase + "'");
+        }
+        this.currentPhase.start();
     }
 
     public JavaPlugin getPlugin() {
@@ -73,30 +109,31 @@ public class ElectionImpl implements Election {
     }
 
     @Override
-    public AbstractPhase getPhase() {
-        return phase;
+    public AbstractPhase getCurrentPhase() {
+        return currentPhase;
     }
 
     @Override
     public boolean isActive() {
-        return phase.getPhaseType() == PhaseType.NOMINATION || phase.getPhaseType() == PhaseType.VOTING;
+        return currentPhase.getPhaseType() == PhaseType.NOMINATION || currentPhase.getPhaseType() == PhaseType.VOTING;
     }
 
     @Override
     public void start() {
-        if (phase.getPhaseType() != PhaseType.SETUP) {
-            phase.finish();
+        if (currentPhase.getPhaseType() != PhaseType.SETUP) {
+            throw new IllegalStateException("The election has already started");
         }
-        phase = new SetupPhase(plugin);
+
+        this.currentPhase = new SetupPhase(plugin, this);
         startNextPhase();
     }
 
     @Override
     public void startNextPhase() {
-        phase.finish();
+        currentPhase.finish();
 
-        this.phase = phase.getNextPhase();
-        phase.start();
+        currentPhase = currentPhase.getNextPhase();
+        currentPhase.start();
     }
 
     @Override
@@ -113,19 +150,17 @@ public class ElectionImpl implements Election {
      * Stops the Election before the {@link PhaseType#FINISHED} phase has been completed.
      */
     public void prematureStop() {
-        phase.finish();
+        currentPhase.finish();
         plugin.resetElection();
     }
 
     @Override
-    @Nullable
-    public Candidate getCandidate(UUID uuid) {
+    public @Nullable Candidate getCandidate(UUID uuid) {
         return nominations.get(uuid);
     }
 
     @Override
-    @Nullable
-    public Candidate getCandidate(String name) {
+    public @Nullable Candidate getCandidate(String name) {
         return nominations.values().stream()
                 .filter(candidate -> candidate.getName().equalsIgnoreCase(name))
                 .findFirst()
@@ -137,20 +172,39 @@ public class ElectionImpl implements Election {
     }
 
     @Override
-    public Map<UUID, Candidate> getNominations() {
-        return nominations;
+    public @Unmodifiable List<Candidate> getCandidates() {
+        return new ArrayList<>(nominations.values());
     }
 
     @Override
-    public void addNomination(Candidate candidate) {
-        this.nominations.put(candidate.getUniqueId(), candidate);
-        this.candidateVoteCount.put(candidate.getUniqueId(), 0);
+    public Candidate nominate(Player player) {
+        return nominate(player.getUniqueId(), player.getName());
     }
 
     @Override
-    public void removeNomination(Candidate candidate) {
-        this.nominations.remove(candidate.getUniqueId());
-        this.candidateVoteCount.remove(candidate.getUniqueId());
+    public Candidate nominate(UUID uuid, String name) {
+        Candidate candidate = new ElectionCandidate(uuid, name);
+        this.nominations.put(uuid, candidate);
+        return candidate;
+    }
+
+    public Candidate nominate(Candidate candidate) {
+        return nominate(candidate.getUniqueId(), candidate.getName());
+    }
+
+    @Override
+    public void withdraw(Candidate candidate) {
+        withdraw(candidate.getUniqueId());
+    }
+
+    @Override
+    public void withdraw(UUID uuid) {
+        this.nominations.remove(uuid);
+    }
+
+    @Override
+    public boolean isNominated(Player player) {
+        return isNominated(player.getUniqueId());
     }
 
     @Override
@@ -159,14 +213,18 @@ public class ElectionImpl implements Election {
     }
 
     @Override
-    @Nullable
-    public Candidate getVote(Player voter) {
-        return this.votes.get(voter.getUniqueId());
+    public @Nullable Candidate getVote(Player voter) {
+        return getVote(voter.getUniqueId());
     }
 
     @Override
-    public boolean hasVotedFor(Player player, Candidate candidate) {
-        Candidate vote = getVote(player);
+    public @Nullable Candidate getVote(UUID voter) {
+        return this.votes.get(voter);
+    }
+
+    @Override
+    public boolean hasVotedFor(UUID uuid, Candidate candidate) {
+        Candidate vote = getVote(uuid);
         if (vote == null) {
             return false;
         }
@@ -174,53 +232,39 @@ public class ElectionImpl implements Election {
     }
 
     @Override
-    public void voteFor(Player voter, String candidateName) {
-        Candidate candidate = getCandidate(candidateName);
-        if (candidate == null) {
-            plugin.getLogger().severe("Invalid candidate: " + candidateName);
+    public boolean hasVotedFor(Player player, Candidate candidate) {
+        return hasVotedFor(player.getUniqueId(), candidate);
+    }
+
+    @Override
+    public synchronized void voteFor(UUID voter, Candidate candidate) {
+        Candidate previousCandidate = getVote(voter);
+        if (candidate.equals(previousCandidate)) {
+            previousCandidate.removeVotes(1);
+            votes.remove(voter);
             return;
         }
 
-        Candidate previousCandidate = getVote(voter);
-        synchronized (candidateVoteCount) {
-            if (candidate.equals(previousCandidate)) {
-                int previousCandidateVoteCount = candidateVoteCount.get(previousCandidate.getUniqueId());
-                candidateVoteCount.put(previousCandidate.getUniqueId(), previousCandidateVoteCount - 1);
-                votes.remove(voter.getUniqueId());
-                return;
-            }
-
-            if (previousCandidate != null) {
-                int previousCandidateVoteCount = candidateVoteCount.get(previousCandidate.getUniqueId());
-                candidateVoteCount.put(previousCandidate.getUniqueId(), previousCandidateVoteCount - 1);
-            }
-
-            int currentCandidateVoteCount = candidateVoteCount.get(candidate.getUniqueId());
-            int currentCandidateNewVoteCount = currentCandidateVoteCount + 1;
-            candidateVoteCount.put(candidate.getUniqueId(), currentCandidateNewVoteCount);
-            votes.put(voter.getUniqueId(), candidate);
+        if (previousCandidate != null) {
+            previousCandidate.removeVotes(1);
         }
+
+        candidate.addVotes(1);
+        votes.put(voter, candidate);
     }
 
     @Override
-    public Map<UUID, Integer> getCandidateVotes() {
-        return candidateVoteCount;
+    public void voteFor(Player voter, Candidate candidate) {
+        voteFor(voter.getUniqueId(), candidate);
     }
 
     @Override
-    public List<Candidate> getTopFive() {
-        return candidateVoteCount.entrySet()
+    public @Unmodifiable List<Candidate> getTopFive() {
+        return getCandidates()
                 .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .sorted(Comparator.comparing(Candidate::getVotes, Comparator.reverseOrder()))
                 .limit(5)
-                .map(entry -> Objects.requireNonNull(getCandidate(entry.getKey())))
                 .collect(Collectors.toList());
-
-    }
-
-    private void load() {
-        this.settings = new ElectionSettings();
-        this.phase = new SetupPhase(plugin);
     }
 
     @Override
@@ -228,9 +272,24 @@ public class ElectionImpl implements Election {
         Map<String, Object> election = new HashMap<>();
 
         election.put("settings", settings.serialize());
-        election.put("nominations", nominations);
-        election.put("votes", votes);
+        election.put("phase", currentPhase.getPhaseType().name());
+        election.put("nominations", serializeNominations());
+        election.put("votes", serializeVotes());
 
         return election;
+    }
+
+    private Object serializeNominations() {
+        Map<String, Object> nominations = new HashMap<>();
+        for (Candidate candidate : this.nominations.values()) {
+            nominations.put(String.valueOf(candidate.getUniqueId()), candidate.serialize());
+        }
+        return nominations;
+    }
+
+    private Object serializeVotes() {
+        Map<String, Object> votes = new HashMap<>();
+        this.votes.forEach((voter, vote) -> votes.put(String.valueOf(voter), String.valueOf(vote.getUniqueId())));
+        return votes;
     }
 }

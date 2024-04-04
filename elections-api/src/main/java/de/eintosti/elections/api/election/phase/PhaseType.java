@@ -19,6 +19,9 @@ package de.eintosti.elections.api.election.phase;
 
 import de.eintosti.elections.api.election.Election;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+import java.util.Arrays;
 
 /**
  * The different {@link Phase}s of an {@link Election}.
@@ -76,5 +79,17 @@ public enum PhaseType {
      * can be taken in this phase.
      * </p>
      */
-    FINISHED
+    FINISHED;
+
+    @Nullable
+    public static PhaseType fromString(@Nullable String key) {
+        if (key == null) {
+            return null;
+        }
+
+        return Arrays.stream(values())
+                .filter(phaseType -> phaseType.name().equalsIgnoreCase(key))
+                .findAny()
+                .orElse(null);
+    }
 }

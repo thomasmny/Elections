@@ -44,7 +44,7 @@ public class RunSubCommand implements SubCommand {
         }
 
         final Election election = plugin.getElection();
-        switch (election.getPhase().getPhaseType()) {
+        switch (election.getCurrentPhase().getPhaseType()) {
             case NOMINATION:
                 // Continue below
                 break;
@@ -103,7 +103,7 @@ public class RunSubCommand implements SubCommand {
         }
 
         int maxCandidates = settings.maxCandidates().get();
-        if (maxCandidates > 0 && election.getNominations().size() < maxCandidates) {
+        if (maxCandidates > 0 && election.getCandidates().size() < maxCandidates) {
             return NominationResult.ALLOWED;
         }
 

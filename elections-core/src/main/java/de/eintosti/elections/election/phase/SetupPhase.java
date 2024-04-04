@@ -19,15 +19,18 @@ package de.eintosti.elections.election.phase;
 
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
+import de.eintosti.elections.election.ElectionImpl;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class SetupPhase extends AbstractPhase {
 
     private final ElectionsPlugin plugin;
+    private final ElectionImpl election;
 
-    public SetupPhase(ElectionsPlugin plugin) {
+    public SetupPhase(ElectionsPlugin plugin, ElectionImpl election) {
         this.plugin = plugin;
+        this.election = election;
     }
 
     @Override
@@ -37,7 +40,7 @@ public class SetupPhase extends AbstractPhase {
 
     @Override
     public AbstractPhase getNextPhase() {
-        return new NominationPhase(plugin);
+        return new NominationPhase(plugin, election);
     }
 
     @Override

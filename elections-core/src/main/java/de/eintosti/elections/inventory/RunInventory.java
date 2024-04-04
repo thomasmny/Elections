@@ -86,7 +86,7 @@ public class RunInventory {
 
     private void addCurrentStatus(Candidate candidate, Inventory inventory) {
         String status = candidate.getStatus();
-        String formattedStatus = status == null ? " §c-" : " §a§o" + status;
+        String formattedStatus = status == null ? "§c-" : "§a§o" + status;
         InventoryUtils.addItemStack(inventory, 13, XMaterial.NAME_TAG,
                 Messages.getString("run.status.current", Placeholder.unparsed("status", formattedStatus))
         );

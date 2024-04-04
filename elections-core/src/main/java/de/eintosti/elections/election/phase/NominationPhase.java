@@ -20,8 +20,7 @@ package de.eintosti.elections.election.phase;
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.api.election.settings.Settings;
-import de.eintosti.elections.election.candidate.ElectionCandidate;
+import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.messages.Messages;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
@@ -37,18 +36,16 @@ import java.util.UUID;
 public class NominationPhase extends ScoreboardPhase {
 
     private final ElectionsPlugin plugin;
-    private final Settings settings;
 
-    public NominationPhase(ElectionsPlugin plugin) {
-        super(plugin.getElection(), PhaseType.NOMINATION);
+    public NominationPhase(ElectionsPlugin plugin, ElectionImpl election) {
+        super(election, PhaseType.NOMINATION);
 
         this.plugin = plugin;
-        this.settings = plugin.getElection().getSettings();
     }
 
     @Override
     public AbstractPhase getNextPhase() {
-        return new VotingPhase(plugin);
+        return new VotingPhase(plugin, election);
     }
 
     @Override
@@ -80,7 +77,7 @@ public class NominationPhase extends ScoreboardPhase {
             put("DerAutist", "1b31a68e-1c89-4378-88ca-87b8522309da");
             put("hypixel", "f7c77d99-9f15-4a66-a87d-c4a51ef30d19");
         }};
-        candidates.forEach((name, uuid) -> plugin.getElection().addNomination(new ElectionCandidate(UUID.fromString(uuid), name)));
+        candidates.forEach((name, uuid) -> plugin.getElection().nominate(UUID.fromString(uuid), name));
 
         super.onFinish();
     }

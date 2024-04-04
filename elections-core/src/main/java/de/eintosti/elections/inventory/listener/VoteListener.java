@@ -49,7 +49,7 @@ public class VoteListener implements Listener {
         }
 
         ElectionImpl election = plugin.getElection();
-        if (election.getPhase().getPhaseType() != PhaseType.VOTING) {
+        if (election.getCurrentPhase().getPhaseType() != PhaseType.VOTING) {
             return;
         }
 
@@ -69,7 +69,8 @@ public class VoteListener implements Listener {
                 if (skullSlot >= 9 && skullSlot <= 17) {
                     ItemStack skull = event.getView().getItem(skullSlot);
                     SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-                    election.voteFor(player, skullMeta.getOwner());
+                    String ownerName = skullMeta.getOwner();
+                    election.voteFor(player, election.getCandidate(ownerName));
                     XSound.ENTITY_CHICKEN_EGG.play(player);
                     player.openInventory(voteInventory.getInventory(player));
                 }

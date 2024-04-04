@@ -38,7 +38,7 @@ public class TopFiveCommand implements SubCommand {
     public void execute(Player player, String[] args) {
         final ElectionImpl election = plugin.getElection();
 
-        switch (election.getPhase().getPhaseType()) {
+        switch (election.getCurrentPhase().getPhaseType()) {
             case VOTING:
             case FINISHED:
                 // Continue below

@@ -17,6 +17,7 @@
  */
 package de.eintosti.elections.api.election.candidate;
 
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -26,7 +27,7 @@ import java.util.UUID;
  * The Candidate interface defines the properties and behaviors of a candidate in an election.
  */
 @NullMarked
-public interface Candidate {
+public interface Candidate extends ConfigurationSerializable {
 
     /**
      * Retrieves the name of the candidate.
@@ -56,6 +57,34 @@ public interface Candidate {
      * @return {@code true} if the candidate has a status set, {@code false} otherwise
      */
     boolean hasStatus();
+
+    /**
+     * Gets the amount of votes the candidate has received.
+     *
+     * @return The amount of votes the candidate has received
+     */
+    int getVotes();
+
+    /**
+     * Sets the amount of votes the candidate has received.
+     *
+     * @param amount The amount of votes to set to
+     */
+    void setVotes(int amount);
+
+    /**
+     * Adds the given amount of votes to the candidate.
+     *
+     * @param amount The amount of votes to add
+     */
+    void addVotes(int amount);
+
+    /**
+     * Removes the given amount of votes from candidate.
+     *
+     * @param amount The amount of votes to remove
+     */
+    void removeVotes(int amount);
 
     /**
      * Sets the status of the candidate.

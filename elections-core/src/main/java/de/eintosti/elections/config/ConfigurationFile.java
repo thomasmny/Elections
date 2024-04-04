@@ -23,6 +23,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +31,8 @@ import java.io.IOException;
 @NullMarked
 public abstract class ConfigurationFile {
 
-    private final File file;
-    private final FileConfiguration configuration;
+    protected final File file;
+    protected final FileConfiguration configuration;
 
     public ConfigurationFile(final ElectionsPlugin plugin, final String fileName) {
         this.file = new File(plugin.getDataFolder(), fileName);
@@ -61,6 +62,7 @@ public abstract class ConfigurationFile {
         }
     }
 
+    @Nullable
     public FileConfiguration getFile() {
         return configuration;
     }

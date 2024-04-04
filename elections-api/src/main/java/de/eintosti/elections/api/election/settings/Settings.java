@@ -35,7 +35,7 @@ public interface Settings {
     Setting<String> position();
 
     /**
-     * Get the amount of seconds left in the countdown for a given phase.
+     * Gets the amount of seconds left in the countdown for a given phase.
      *
      * @param phase The phase
      * @return The seconds left in the countdown
@@ -43,21 +43,21 @@ public interface Settings {
     Setting<Integer> countdown(final PhaseType phase);
 
     /**
-     * Get the maximum amount of characters a {@link Candidate}s status can be long.
+     * Gets the maximum amount of characters a {@link Candidate}s status can be long.
      *
      * @return The maximum length of a candidate's status
      */
     Setting<Integer> maxStatusLength();
 
     /**
-     * Get the maximum amount of {@link Candidate}s that can participate in an {@link Election}.
+     * Gets the maximum amount of {@link Candidate}s that can participate in an {@link Election}.
      *
      * @return The maximum amount of candidates that can participate in an Election
      */
     Setting<Integer> maxCandidates();
 
     /**
-     * Get whether the scoreboard is enabled for the given {@link Election} phase.
+     * Gets whether the scoreboard is enabled for the given {@link Election} phase.
      *
      * @param phase The phase
      * @return A boolean type whether the scoreboard is enabled
@@ -65,7 +65,7 @@ public interface Settings {
     Setting<Boolean> scoreboard(final PhaseType phase);
 
     /**
-     * Get whether the action-bar is used for displaying the remaining time in the given {@link Election} phase.
+     * Gets whether the action-bar is used for displaying the remaining time in the given {@link Election} phase.
      *
      * @param phase The phase
      * @return A boolean type whether the action-bar is enabled
@@ -73,7 +73,7 @@ public interface Settings {
     Setting<Boolean> actionBar(final PhaseType phase);
 
     /**
-     * Get whether titles are used for notification for the given {@link Election} phase.
+     * Gets whether titles are used for notification for the given {@link Election} phase.
      *
      * @param phase The phase
      * @return A boolean type whether title notification is enabled
@@ -81,7 +81,7 @@ public interface Settings {
     Setting<Boolean> title(final PhaseType phase);
 
     /**
-     * Get whether players receive a chat notification about the given {@link Election} phase.
+     * Gets whether players receive a chat notification about the given {@link Election} phase.
      *
      * @param phase The phase
      * @return A boolean type whether players receive a chat notification
@@ -95,6 +95,13 @@ public interface Settings {
      */
     Setting<Boolean> candidateLimitEnabled();
 
+    /**
+     * Gets the list of commands which will be run when the {@link Election} finishes.
+     * <p>
+     * Commands should <b>not</b> start with a {@code /}.
+     *
+     * @return The list of commands which will bre run when the election finishes
+     */
     Setting<List<String>> finishCommands();
 
     /**

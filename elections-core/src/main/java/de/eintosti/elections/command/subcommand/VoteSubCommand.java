@@ -40,7 +40,7 @@ public class VoteSubCommand implements SubCommand {
             return;
         }
 
-        switch (plugin.getElection().getPhase().getPhaseType()) {
+        switch (plugin.getElection().getCurrentPhase().getPhaseType()) {
             case VOTING:
                 // Continue below
                 break;

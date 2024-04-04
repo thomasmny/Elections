@@ -50,14 +50,9 @@ public class CommandSubCommand implements SubCommand {
         }
 
         Election election = plugin.getElection();
-        switch (election.getPhase().getPhaseType()) {
-            case SETUP:
-            case FINISHED:
-                // Continue below
-                break;
-            default:
-                Messages.sendMessage(player, "election.finish_command.already_started");
-                return;
+        if (election.isActive()) {
+            Messages.sendMessage(player, "election.finish_command.already_started");
+            return;
         }
 
         String command = String.join(" ", Arrays.copyOfRange(args, 1, args.length));

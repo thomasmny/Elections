@@ -34,32 +34,32 @@ public class ElectionSettings implements Settings, ConfigurationSerializable {
 
     private final Map<String, ElectionSetting<?>> data = new HashMap<>();
 
-    private final ElectionSetting<String> position = register("position", "Mayor");
+    private final Setting<String> position = register("position", "Mayor");
 
-    private final ElectionSetting<Integer> nominationCountdown = register("nomination-countdown", 1800);
-    private final ElectionSetting<Integer> votingCountdown = register("voting-countdown", 1800);
-    private final ElectionSetting<Integer> maxStatusLength = register("max-status-length", 24);
-    private final ElectionSetting<Integer> maxCandidates = register("max-candidates", 16);
+    private final Setting<Integer> nominationCountdown = register("nomination-countdown", 1800);
+    private final Setting<Integer> votingCountdown = register("voting-countdown", 1800);
+    private final Setting<Integer> maxStatusLength = register("max-status-length", 24);
+    private final Setting<Integer> maxCandidates = register("max-candidates", 16);
 
-    private final ElectionSetting<Boolean> nominationScoreboard = register("nomination-scoreboard", true);
-    private final ElectionSetting<Boolean> nominationActionBar = register("nomination-actionbar", true);
-    private final ElectionSetting<Boolean> nominationTitle = register("nomination-title", true);
-    private final ElectionSetting<Boolean> nominationNotification = register("nomination-notification", true);
+    private final Setting<Boolean> nominationScoreboard = register("nomination-scoreboard", true);
+    private final Setting<Boolean> nominationActionBar = register("nomination-actionbar", true);
+    private final Setting<Boolean> nominationTitle = register("nomination-title", true);
+    private final Setting<Boolean> nominationNotification = register("nomination-notification", true);
 
-    private final ElectionSetting<Boolean> votingScoreboard = register("voting-scoreboard", true);
-    private final ElectionSetting<Boolean> votingActionBar = register("voting-actionbar", true);
-    private final ElectionSetting<Boolean> votingTitle = register("voting-title", true);
-    private final ElectionSetting<Boolean> votingNotification = register("voting-notification", true);
+    private final Setting<Boolean> votingScoreboard = register("voting-scoreboard", true);
+    private final Setting<Boolean> votingActionBar = register("voting-actionbar", true);
+    private final Setting<Boolean> votingTitle = register("voting-title", true);
+    private final Setting<Boolean> votingNotification = register("voting-notification", true);
 
-    private final ElectionSetting<Boolean> candidateLimitEnabled = register("candidate-limit-enabled", false);
+    private final Setting<Boolean> candidateLimitEnabled = register("candidate-limit-enabled", false);
 
-    private final ElectionSetting<List<String>> finishCommands = register("finish-commands", new ArrayList<>());
+    private final Setting<List<String>> finishCommands = register("finish-commands", new ArrayList<>());
 
-    public <T> ElectionSetting<T> register(String key, T defaultValue) {
+    public <T> Setting<T> register(String key, T defaultValue) {
         return register(key, new ElectionSetting<>(defaultValue));
     }
 
-    public <T> ElectionSetting<T> register(String key, ElectionSetting<T> type) {
+    public <T> Setting<T> register(String key, ElectionSetting<T> type) {
         this.data.put(key, type);
         return type;
     }
