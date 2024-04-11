@@ -28,10 +28,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.jspecify.annotations.NullMarked;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 @NullMarked
 public class NominationPhase extends ScoreboardPhase {
 
@@ -61,25 +57,6 @@ public class NominationPhase extends ScoreboardPhase {
                 Messages.sendTitle(pl, "election.nomination.title", "election.nomination.subtitle");
             }
         });
-    }
-
-    //TODO: Remove fake candidates
-    @Override
-    public void onFinish() {
-        Map<String, String> candidates = new HashMap<String, String>() {{
-            put("GommeHD", "e9013c2f-da01-425f-a48b-516f55e94386");
-            put("Deennis", "6cf19618-9662-415a-b8c8-aab1f3e0f9f7");
-            put("Kreuzrausch", "8f12bdd1-fb15-4386-9bf3-cbdbb4495cbd");
-            put("BergFelix", "c76d607d-4ec0-4bbd-8199-de0a70bb93b9");
-            put("Petaa97", "89ea5c0f-3311-4afc-890b-1340fa6a4e8b");
-            put("Klaus", "3fef889a-fb68-4dfb-bcee-38d56637f6f6");
-            put("xAuster", "bd42ecf6-daf0-477b-954a-2f303ed6c463");
-            put("DerAutist", "1b31a68e-1c89-4378-88ca-87b8522309da");
-            put("hypixel", "f7c77d99-9f15-4a66-a87d-c4a51ef30d19");
-        }};
-        candidates.forEach((name, uuid) -> plugin.getElection().nominate(UUID.fromString(uuid), name));
-
-        super.onFinish();
     }
 
     @EventHandler
