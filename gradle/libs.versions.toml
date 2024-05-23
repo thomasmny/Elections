@@ -1,18 +1,18 @@
 [versions]
 # Platform expectations
-spigot = "1.20.4-R0.1-SNAPSHOT"
+spigot = "1.20.6-R0.1-SNAPSHOT"
 
 # Third Party
-adventure-api = "4.16.0"
-adventure-minimessage = "4.16.0"
+adventure-api = "4.17.0"
+adventure-minimessage = "4.17.0"
 adventure-platform = "4.3.2"
 annotations = "24.1.0"
 anvilgui = "1.9.2-SNAPSHOT"
 authlib = "1.5.25"
 bstats = "3.0.2"
-fastboard = "2.1.0"
+fastboard = "2.1.2"
 jspecify = "0.3.0"
-xseries = "9.10.0"
+xseries = "10.0.0"
 
 [libraries]
 #Platform expectations

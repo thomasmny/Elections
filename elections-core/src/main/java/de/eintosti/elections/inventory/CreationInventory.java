@@ -17,6 +17,7 @@
  */
 package de.eintosti.elections.inventory;
 
+import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
@@ -28,7 +29,6 @@ import de.eintosti.elections.util.InventoryUtils;
 import de.eintosti.elections.util.external.StringUtils;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -179,14 +179,14 @@ public class CreationInventory {
 
         /**
          * Matches the page based on the item in the specified inventory slot that contains the
-         * {@link Enchantment#DURABILITY} enchantment.
+         * {@link XEnchantment#UNBREAKING} enchantment.
          *
          * @param inventory The inventory to match the page from
          * @return The matched page, or {@link #GENERAL} if no match is found
          */
         public static Page fromInventory(Inventory inventory) {
             return Arrays.stream(values())
-                    .filter(page -> inventory.getItem(page.getSlot()).containsEnchantment(Enchantment.DURABILITY))
+                    .filter(page -> inventory.getItem(page.getSlot()).containsEnchantment(XEnchantment.UNBREAKING.getEnchant()))
                     .findFirst()
                     .orElse(GENERAL);
         }
@@ -233,7 +233,7 @@ public class CreationInventory {
             InventoryUtils.addItemStack(inventory, 50, XMaterial.FEATHER, Messages.getString("creation.page.voting"));
             InventoryUtils.addItemStack(inventory, 52, XMaterial.OAK_SIGN, Messages.getString("creation.page.finish"));
 
-            inventory.getItem(slot).addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            inventory.getItem(slot).addUnsafeEnchantment(XEnchantment.UNBREAKING.getEnchant(), 1);
         }
 
         private void addBorder(Inventory inv) {

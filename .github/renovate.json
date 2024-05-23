@@ -3,6 +3,10 @@
     "config:base",
     ":disableDependencyDashboard"
   ],
+  "automerge": true,
+  "ignoreDeps": [
+    "org.spigotmc:spigot-api"
+  ],
   "labels": [
     "renovate"
   ],

@@ -18,8 +18,8 @@
 package de.eintosti.elections.util;
 
 import com.cryptomorin.xseries.SkullUtils;
+import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -64,7 +64,7 @@ public final class InventoryUtils {
         ItemStack itemStack = getItemStack(material, displayName, lore);
         itemStack.setAmount(amount);
         if (enchant) {
-            itemStack.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            itemStack.addUnsafeEnchantment(XEnchantment.UNBREAKING.getEnchant(), 1);
         }
         inventory.setItem(position, itemStack);
     }
