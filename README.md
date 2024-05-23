@@ -1,4 +1,4 @@
-# Elections ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/thomasmny/Elections/Build%20main/master) ![version](https://img.shields.io/github/v/release/thomasmny/Elections) [![Discord](https://img.shields.io/discord/419460301403193344.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/Nt467Rf)
+# Elections ![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/thomasmny/Elections/build.yml?branch=master) ![version](https://img.shields.io/github/v/release/thomasmny/Elections) [![Discord](https://img.shields.io/discord/419460301403193344.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/Nt467Rf)
 
 ![Screenshot](.github/images/elections_header.png)
 
