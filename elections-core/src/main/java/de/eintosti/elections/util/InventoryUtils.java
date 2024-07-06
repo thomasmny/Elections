@@ -17,15 +17,15 @@
  */
 package de.eintosti.elections.util;
 
-import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.profiles.builder.XSkull;
+import com.cryptomorin.xseries.profiles.objects.Profileable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.Arrays;
@@ -74,15 +74,17 @@ public final class InventoryUtils {
     }
 
     public static ItemStack getSkull(String displayName, String identifier, List<String> lore) {
-        ItemStack skull = XMaterial.PLAYER_HEAD.parseItem();
-        SkullMeta skullMeta = SkullUtils.applySkin(skull.getItemMeta(), identifier).clone();
+        ItemStack skull = XSkull.createItem()
+                .profile(Profileable.detect(identifier))
+                .apply();
+        ItemMeta itemMeta = skull.getItemMeta();
 
-        skullMeta.setDisplayName(displayName);
+        itemMeta.setDisplayName(displayName);
         if (!lore.isEmpty()) {
-            skullMeta.setLore(lore);
+            itemMeta.setLore(lore);
         }
-        skullMeta.addItemFlags(ItemFlag.values());
-        skull.setItemMeta(skullMeta);
+        itemMeta.addItemFlags(ItemFlag.values());
+        skull.setItemMeta(itemMeta);
 
         return skull;
     }
