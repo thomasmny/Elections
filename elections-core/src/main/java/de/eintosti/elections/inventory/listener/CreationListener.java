@@ -17,6 +17,7 @@
  */
 package de.eintosti.elections.inventory.listener;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.Election;
@@ -26,7 +27,6 @@ import de.eintosti.elections.api.election.settings.Settings.Setting;
 import de.eintosti.elections.inventory.CreationInventory;
 import de.eintosti.elections.inventory.CreationInventory.Page;
 import de.eintosti.elections.messages.Messages;
-import de.eintosti.elections.util.InventoryUtils;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.wesjd.anvilgui.AnvilGUI;
 import net.wesjd.anvilgui.AnvilGUI.ResponseAction;
@@ -34,6 +34,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.Collections;
@@ -43,25 +44,31 @@ import java.util.List;
 public class CreationListener implements Listener {
 
     private final ElectionsPlugin plugin;
-    private final Election election;
-    private final Settings settings;
 
     public CreationListener(ElectionsPlugin plugin) {
         this.plugin = plugin;
-        this.election = plugin.getElection();
-        this.settings = election.getSettings();
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!InventoryUtils.isValidClick(event, Messages.getString("creation.title"))) {
+        if (!(event.getInventory().getHolder() instanceof CreationInventory)) {
             return;
         }
+
+        ItemStack itemStack = event.getCurrentItem();
+        if (itemStack == null || itemStack.getType() == XMaterial.AIR.parseMaterial() || !itemStack.hasItemMeta()) {
+            return;
+        }
+
+        event.setCancelled(true);
 
         Player player = (Player) event.getWhoClicked();
         if (!player.hasPermission("elections.create")) {
             return;
         }
+
+        Election election = plugin.getElection();
+        Settings settings = election.getSettings();
 
         CreationInventory createInventory = plugin.getCreationInventory();
         Page page = Page.fromInventory(event.getInventory());
@@ -190,6 +197,7 @@ public class CreationListener implements Listener {
     }
 
     private void openPositionAnvil(Player player) {
+        Settings settings = plugin.getElection().getSettings();
         new AnvilGUI.Builder()
                 .onClick((slot, stateSnapshot) -> {
                     Player anvilPlayer = stateSnapshot.getPlayer();
@@ -215,7 +223,7 @@ public class CreationListener implements Listener {
                     if (command.startsWith("/")) {
                         command = command.substring(1);
                     }
-                    settings.finishCommands().get().add(command);
+                    plugin.getElection().getSettings().finishCommands().get().add(command);
 
                     XSound.ENTITY_PLAYER_LEVELUP.play(anvilPlayer);
                     Messages.sendMessage(anvilPlayer, "election.finish_command.added",

@@ -21,7 +21,7 @@ import de.eintosti.elections.api.Elections;
 import de.eintosti.elections.api.ElectionsApi;
 import de.eintosti.elections.command.ElectionsCommand;
 import de.eintosti.elections.config.ElectionStorage;
-import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.election.Election;
 import de.eintosti.elections.inventory.CreationInventory;
 import de.eintosti.elections.inventory.RunInventory;
 import de.eintosti.elections.inventory.TimeInventory;
@@ -39,7 +39,7 @@ public class ElectionsPlugin extends JavaPlugin {
     public static final int METRICS_ID = 21256;
 
     private ElectionStorage storage;
-    private ElectionImpl election;
+    private Election election;
 
     private BukkitAudiences adventure;
 
@@ -51,6 +51,7 @@ public class ElectionsPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        getDataFolder().mkdirs();
         new MessagesProvider(this).setup();
     }
 
@@ -100,10 +101,10 @@ public class ElectionsPlugin extends JavaPlugin {
 
     public void resetElection() {
         this.election.getCurrentPhase().finish();
-        this.election = ElectionImpl.init();
+        this.election = Election.init();
     }
 
-    public ElectionImpl getElection() {
+    public Election getElection() {
         return election;
     }
 

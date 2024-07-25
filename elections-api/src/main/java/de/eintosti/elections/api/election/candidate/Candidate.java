@@ -62,7 +62,7 @@ public interface Candidate extends ConfigurationSerializable {
     /**
      * Sets the status of the candidate.
      *
-     * @param status The new status of the candidate
+     * @param status The new status of the candidate or {@code null} to remove
      */
     void setStatus(@Nullable String status);
 

@@ -20,7 +20,7 @@ package de.eintosti.elections.election.phase;
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.election.Election;
 import de.eintosti.elections.messages.Messages;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
@@ -37,7 +37,7 @@ public class NominationPhase extends ScoreboardPhase {
 
     private final ElectionsPlugin plugin;
 
-    public NominationPhase(ElectionsPlugin plugin, ElectionImpl election) {
+    public NominationPhase(ElectionsPlugin plugin, Election election) {
         super(election, PhaseType.NOMINATION);
 
         this.plugin = plugin;

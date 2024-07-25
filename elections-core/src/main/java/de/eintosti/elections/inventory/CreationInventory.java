@@ -19,6 +19,7 @@ package de.eintosti.elections.inventory;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.profiles.objects.Profileable;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.election.settings.Settings;
@@ -30,6 +31,8 @@ import de.eintosti.elections.util.external.StringUtils;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -37,18 +40,22 @@ import java.util.Arrays;
 import java.util.List;
 
 @NullMarked
-public class CreationInventory {
+public class CreationInventory implements InventoryHolder {
 
-    private final Settings settings;
+    private final ElectionsPlugin plugin;
+    private final Inventory inventory;
 
     public CreationInventory(ElectionsPlugin plugin) {
-        this.settings = plugin.getElection().getSettings();
+        this.plugin = plugin;
+        this.inventory = Bukkit.createInventory(this, 54, Messages.getString("creation.title"));
 
         Bukkit.getPluginManager().registerEvents(new CreationListener(plugin), plugin);
     }
 
     public Inventory getInventory(Page page) {
-        Inventory inventory = Bukkit.createInventory(null, 54, Messages.getString("creation.title"));
+        Settings settings = plugin.getElection().getSettings();
+
+        this.inventory.clear(); // Clear all items when switching page
 
         InventoryUtils.addItemStack(inventory, 4, XMaterial.BOOK, Messages.getString("creation.election.start"));
         page.addCurrentPageMarkers(inventory);
@@ -62,7 +69,7 @@ public class CreationInventory {
                                 Placeholder.unparsed("position", settings.position().get())
                         )
                 );
-                addMaxPlayers(inventory);
+                addMaxPlayers();
                 InventoryUtils.addEnchantedItemStack(inventory, 24, XMaterial.NAME_TAG, settings.maxStatusLength().get(),
                         Messages.getString("creation.status_length.title"), false, Messages.getStringList("creation.status_length.lore")
                 );
@@ -74,31 +81,31 @@ public class CreationInventory {
 
                 InventoryUtils.addSkull(inventory, 19,
                         Messages.getString("creation.scoreboard.title"),
-                        "27712ca655128701ea3e5f28ddd69e6a8e63adf28052c51b2fd5adb538e1",
+                        Profileable.detect("27712ca655128701ea3e5f28ddd69e6a8e63adf28052c51b2fd5adb538e1"),
                         Messages.getStringList("creation.scoreboard.lore")
                 );
-                addSettingsToggle(inventory, 28, settings.scoreboard(phaseKey));
+                addSettingsToggle(28, settings.scoreboard(phaseKey));
 
                 InventoryUtils.addSkull(inventory, 20,
                         Messages.getString("creation.actionbar.title"),
-                        "c95d37993e594082678472bf9d86823413c250d4332a2c7d8c52de4976b362",
+                        Profileable.detect("c95d37993e594082678472bf9d86823413c250d4332a2c7d8c52de4976b362"),
                         Messages.getStringList("creation.actionbar.lore")
                 );
-                addSettingsToggle(inventory, 29, settings.actionBar(phaseKey));
+                addSettingsToggle(29, settings.actionBar(phaseKey));
 
                 InventoryUtils.addSkull(inventory, 21,
                         Messages.getString("creation.titles.title"),
-                        "97e56140686e476aef5520acbabc239535ff97e24b14d87f4982f13675c",
+                        Profileable.detect("97e56140686e476aef5520acbabc239535ff97e24b14d87f4982f13675c"),
                         Messages.getStringList("creation.titles.lore")
                 );
-                addSettingsToggle(inventory, 30, settings.title(phaseKey));
+                addSettingsToggle(30, settings.title(phaseKey));
 
                 InventoryUtils.addSkull(inventory, 22,
                         Messages.getString("creation.notifications.title"),
-                        "2ab5de74bb367e4a55a84a8843e05e94664af551a4b99cdf410436f0e444",
+                        Profileable.detect("2ab5de74bb367e4a55a84a8843e05e94664af551a4b99cdf410436f0e444"),
                         Messages.getStringList("creation.notifications.lore")
                 );
-                addSettingsToggle(inventory, 31, settings.notification(phaseKey));
+                addSettingsToggle(31, settings.notification(phaseKey));
 
                 InventoryUtils.addItemStack(
                         inventory, 24, XMaterial.CLOCK,
@@ -120,18 +127,19 @@ public class CreationInventory {
         return inventory;
     }
 
-    private void addSettingsToggle(Inventory inventory, int position, Setting<Boolean> setting) {
+    private void addSettingsToggle(int position, Setting<Boolean> setting) {
         boolean enabled = setting.get();
         XMaterial material = enabled ? XMaterial.LIME_DYE : XMaterial.GRAY_DYE;
         String displayNameKey = enabled ? "creation.setting.enabled" : "creation.setting.disabled";
         InventoryUtils.addItemStack(inventory, position, material, Messages.getString(displayNameKey));
     }
 
-    private void addMaxPlayers(Inventory inventory) {
+    private void addMaxPlayers() {
         boolean enabled = false;
         XMaterial material = XMaterial.SKELETON_SKULL;
         int amount = 1;
 
+        Settings settings = plugin.getElection().getSettings();
         if (settings.candidateLimitEnabled().get()) {
             enabled = true;
             material = XMaterial.PLAYER_HEAD;
@@ -150,7 +158,7 @@ public class CreationInventory {
     private List<String> getCommandLore() {
         List<String> lore = Messages.getStringList("creation.commands.lore");
 
-        List<String> commands = settings.finishCommands().get();
+        List<String> commands = plugin.getElection().getSettings().finishCommands().get();
         if (commands.isEmpty()) {
             lore.add(Messages.getString("creation.commands.empty"));
         } else {
@@ -160,6 +168,12 @@ public class CreationInventory {
         }
 
         return lore;
+    }
+
+    @Internal
+    @Override
+    public Inventory getInventory() {
+        return this.inventory;
     }
 
     public enum Page {

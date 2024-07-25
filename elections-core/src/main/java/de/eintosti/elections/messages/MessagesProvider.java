@@ -18,7 +18,6 @@
 package de.eintosti.elections.messages;
 
 import de.eintosti.elections.ElectionsPlugin;
-import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -27,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -35,6 +33,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 
 @NullMarked
 public class MessagesProvider {
@@ -75,19 +74,14 @@ public class MessagesProvider {
         }
 
         plugin.getLogger().info("Copying default messages file...");
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
 
-        try {
-            inputStream = plugin.getResource("lang/messages.properties");
-            outputStream = Files.newOutputStream(messages.toPath());
-            IOUtils.copy(new InputStreamReader(inputStream, StandardCharsets.UTF_8), outputStream);
+        try (InputStream stream = plugin.getClass().getClassLoader().getResourceAsStream("lang/messages.properties")) {
+            if (stream == null) {
+                throw new IOException("Unable to find messages.properties file");
+            }
+            Files.copy(stream, getMessagesFile().toPath());
         } catch (IOException e) {
-            plugin.getLogger().severe("Error while copying default messages:");
-            e.printStackTrace();
-        } finally {
-            close(inputStream);
-            close(outputStream);
+            plugin.getLogger().log(Level.SEVERE, "Error while copying default messages:", e);
         }
     }
 

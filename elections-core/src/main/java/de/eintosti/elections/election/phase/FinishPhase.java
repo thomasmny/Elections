@@ -19,11 +19,10 @@ package de.eintosti.elections.election.phase;
 
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
-import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.event.election.ElectionFinishEvent;
-import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.election.Election;
 import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.external.StringUtils;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -42,13 +41,13 @@ import java.util.stream.Collectors;
 public class FinishPhase extends AbstractPhase {
 
     private final ElectionsPlugin plugin;
-    private final ElectionImpl election;
+    private final Election election;
 
     private final List<Candidate> winners;
     private final List<UUID> notified;
     private int winningCount = 0;
 
-    public FinishPhase(ElectionsPlugin plugin, ElectionImpl election) {
+    public FinishPhase(ElectionsPlugin plugin, Election election) {
         this.plugin = plugin;
         this.election = election;
 
@@ -95,30 +94,26 @@ public class FinishPhase extends AbstractPhase {
     }
 
     /**
-     * Notifies all online players that the {@link Election} has finished.
+     * Notifies all online players that the {@link de.eintosti.elections.api.election.Election} has finished.
      */
     private void notifyAllPlayers() {
         Bukkit.getOnlinePlayers().forEach(pl -> notifyPlayer(pl, false));
     }
 
     /**
-     * Notifies the given player that the {@link Election} has finished.
+     * Notifies the given player that the {@link de.eintosti.elections.api.election.Election} has finished.
      *
      * @param player     The player to notify
      * @param wasOffline Whether the player was offline while the elections finished
      */
     private void notifyPlayer(Player player, boolean wasOffline) {
-        if (player.getOpenInventory().getTitle().equals(Messages.getString("vote.title"))) {
-            player.closeInventory();
-        }
-
         XSound.ENTITY_FIREWORK_ROCKET_LAUNCH.play(player);
         sendWinningMessage(player, wasOffline);
         notified.add(player.getUniqueId());
     }
 
     /**
-     * Sends a message to the given player containing information about who won the {@link Election}.
+     * Sends a message to the given player containing information about who won the {@link de.eintosti.elections.api.election.Election}.
      *
      * @param player     The player to send the message to
      * @param wasOffline Whether the player was offline while the elections finished

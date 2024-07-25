@@ -17,18 +17,19 @@
  */
 package de.eintosti.elections.inventory.listener;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.election.settings.Settings.Setting;
-import de.eintosti.elections.election.ElectionSettings;
 import de.eintosti.elections.inventory.CreationInventory.Page;
+import de.eintosti.elections.inventory.TimeInventory;
 import de.eintosti.elections.messages.Messages;
-import de.eintosti.elections.util.InventoryUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
@@ -41,18 +42,23 @@ public class TimeListener implements Listener {
     private static final int ONE_DAY = 24 * ONE_HOUR;
 
     private final ElectionsPlugin plugin;
-    private final ElectionSettings settings;
 
     public TimeListener(ElectionsPlugin plugin) {
         this.plugin = plugin;
-        this.settings = plugin.getElection().getSettings();
     }
 
     @EventHandler
     public void onInventoryClickTime(InventoryClickEvent event) {
-        if (!InventoryUtils.isValidClick(event, Messages.getString("time.title"))) {
+        if (!(event.getInventory().getHolder() instanceof TimeInventory)) {
             return;
         }
+
+        ItemStack itemStack = event.getCurrentItem();
+        if (itemStack == null || itemStack.getType() == XMaterial.AIR.parseMaterial() || !itemStack.hasItemMeta()) {
+            return;
+        }
+
+        event.setCancelled(true);
 
         Player player = (Player) event.getWhoClicked();
         String displayName = event.getInventory().getItem(PHASE_INFORMATION_SLOT).getItemMeta().getDisplayName();
@@ -97,7 +103,7 @@ public class TimeListener implements Listener {
      * @param seconds The amount of seconds to reduce the countdown by
      */
     private void tryCountdownReduction(PhaseType phase, Player player, int seconds) {
-        if ((settings.countdown(phase).get() - seconds) > 0) {
+        if ((plugin.getElection().getSettings().countdown(phase).get() - seconds) > 0) {
             XSound.ENTITY_ITEM_PICKUP.play(player);
             modifyCountdown(phase, player, -seconds);
         } else {
@@ -114,7 +120,7 @@ public class TimeListener implements Listener {
      * @param seconds The amount of seconds to increment the countdown by
      */
     private void modifyCountdown(PhaseType phase, Player player, int seconds) {
-        Setting<Integer> countdown = settings.countdown(phase);
+        Setting<Integer> countdown = plugin.getElection().getSettings().countdown(phase);
         countdown.set(countdown.get() + seconds);
         XSound.ENTITY_ITEM_PICKUP.play(player);
         player.openInventory(plugin.getTimeInventory().getInventory(phase));

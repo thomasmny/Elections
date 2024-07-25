@@ -21,7 +21,7 @@ import com.cryptomorin.xseries.messages.ActionBar;
 import de.eintosti.elections.api.election.phase.Phase;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.election.settings.Settings.Setting;
-import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.election.Election;
 import de.eintosti.elections.election.ElectionSettings;
 import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.external.StringUtils;
@@ -39,7 +39,7 @@ import java.util.Locale;
 @NullMarked
 public abstract class CountdownPhase extends AbstractPhase {
 
-    private final ElectionImpl election;
+    private final Election election;
     private final ElectionSettings settings;
     private final PhaseType phase;
 
@@ -47,7 +47,7 @@ public abstract class CountdownPhase extends AbstractPhase {
     private BukkitTask countdownTask;
     private final Setting<Integer> countdown;
 
-    public CountdownPhase(ElectionImpl election, PhaseType phase) {
+    public CountdownPhase(Election election, PhaseType phase) {
         this.election = election;
         this.settings = election.getSettings();
         this.phase = phase;

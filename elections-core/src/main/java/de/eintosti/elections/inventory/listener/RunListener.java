@@ -17,13 +17,14 @@
  */
 package de.eintosti.elections.inventory.listener;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.candidate.Candidate;
-import de.eintosti.elections.api.election.settings.Settings;
-import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.api.election.phase.PhaseType;
+import de.eintosti.elections.election.Election;
+import de.eintosti.elections.inventory.RunInventory;
 import de.eintosti.elections.messages.Messages;
-import de.eintosti.elections.util.InventoryUtils;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -32,6 +33,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.Collections;
@@ -39,22 +41,36 @@ import java.util.Collections;
 @NullMarked
 public class RunListener implements Listener {
 
-    private final ElectionImpl election;
-    private final Settings settings;
+    private final ElectionsPlugin plugin;
 
     public RunListener(ElectionsPlugin plugin) {
-        this.election = plugin.getElection();
-        this.settings = election.getSettings();
+        this.plugin = plugin;
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!InventoryUtils.isValidClick(event, Messages.getString("run.title"))) {
+        if (!(event.getInventory().getHolder() instanceof RunInventory)) {
             return;
         }
 
+        ItemStack itemStack = event.getCurrentItem();
+        if (itemStack == null || itemStack.getType() == XMaterial.AIR.parseMaterial() || !itemStack.hasItemMeta()) {
+            return;
+        }
+
+        event.setCancelled(true);
+
         Player player = (Player) event.getWhoClicked();
         if (!player.hasPermission("elections.run")) {
+            Messages.sendMessage(player, "election.run.no_permission");
+            player.closeInventory();
+            return;
+        }
+
+        Election election = plugin.getElection();
+        if (election.getCurrentPhase().getPhaseType() != PhaseType.NOMINATION) {
+            Messages.sendMessage(player, "election.nomination.over");
+            player.closeInventory();
             return;
         }
 
@@ -68,7 +84,7 @@ public class RunListener implements Listener {
                     return;
                 }
                 XSound.ENTITY_ITEM_PICKUP.play(player);
-                openStatusAnvil(player, candidate);
+                openStatusAnvil(election, player, candidate);
                 break;
 
             case 11:
@@ -80,7 +96,7 @@ public class RunListener implements Listener {
                 break;
 
             case 16:
-                TagResolver position = Placeholder.unparsed("position", settings.position().get());
+                TagResolver position = Placeholder.unparsed("position", election.getSettings().position().get());
                 if (election.isNominated(candidate.getUniqueId())) {
                     election.withdraw(candidate);
                     Messages.sendMessage(player, "election.run.stop", position);
@@ -94,8 +110,8 @@ public class RunListener implements Listener {
         }
     }
 
-    private void openStatusAnvil(Player anvilPlayer, Candidate candidate) {
-        int maxLength = settings.maxStatusLength().get();
+    private void openStatusAnvil(Election election, Player anvilPlayer, Candidate candidate) {
+        int maxLength = election.getSettings().maxStatusLength().get();
         new AnvilGUI.Builder()
                 .onClick((slot, stateSnapshot) -> {
                     String status = stateSnapshot.getText().trim();

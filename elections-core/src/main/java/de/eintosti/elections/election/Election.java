@@ -19,7 +19,6 @@ package de.eintosti.elections.election;
 
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
-import de.eintosti.elections.api.election.Election;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.event.election.ElectionCancelEvent;
@@ -48,7 +47,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @NullMarked
-public class ElectionImpl implements Election {
+public class Election implements de.eintosti.elections.api.election.Election {
 
     private final ElectionsPlugin plugin;
     private final ElectionSettings settings;
@@ -58,20 +57,20 @@ public class ElectionImpl implements Election {
 
     private AbstractPhase currentPhase;
 
-    public static ElectionImpl init() {
-        return new ElectionImpl(new ElectionSettings(), new HashMap<>(), new HashMap<>(), PhaseType.SETUP);
+    public static Election init() {
+        return new Election(new ElectionSettings(), new HashMap<>(), new HashMap<>(), PhaseType.SETUP);
     }
 
-    public static ElectionImpl unfreeze(
+    public static Election unfreeze(
             ElectionSettings settings,
             Map<UUID, Candidate> nominations,
             Map<UUID, Candidate> votes,
             PhaseType currentPhase
     ) {
-        return new ElectionImpl(settings, nominations, votes, currentPhase);
+        return new Election(settings, nominations, votes, currentPhase);
     }
 
-    private ElectionImpl(
+    private Election(
             ElectionSettings settings,
             Map<UUID, Candidate> nominations,
             Map<UUID, Candidate> votes,

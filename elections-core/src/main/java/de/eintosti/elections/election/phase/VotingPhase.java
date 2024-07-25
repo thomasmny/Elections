@@ -20,7 +20,7 @@ package de.eintosti.elections.election.phase;
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.election.Election;
 import de.eintosti.elections.messages.Messages;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
@@ -33,7 +33,7 @@ public class VotingPhase extends ScoreboardPhase {
 
     private final ElectionsPlugin plugin;
 
-    public VotingPhase(ElectionsPlugin plugin, ElectionImpl election) {
+    public VotingPhase(ElectionsPlugin plugin, Election election) {
         super(election, PhaseType.VOTING);
 
         this.plugin = plugin;
@@ -58,10 +58,6 @@ public class VotingPhase extends ScoreboardPhase {
         }
 
         Bukkit.getOnlinePlayers().forEach(pl -> {
-            if (pl.getOpenInventory().getTitle().equals(Messages.getString("run.title"))) {
-                pl.closeInventory();
-            }
-
             XSound.ENTITY_FIREWORK_ROCKET_LAUNCH.play(pl);
             Messages.sendMessage(pl, "election.voting.started",
                     Placeholder.unparsed("position", settings.position().get())

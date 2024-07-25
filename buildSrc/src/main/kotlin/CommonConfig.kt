@@ -22,8 +22,8 @@ fun Project.applyCommonConfiguration() {
     }
 
     plugins.withId("java") {
-        the<JavaPluginExtension>().sourceCompatibility = JavaVersion.VERSION_1_8
-        the<JavaPluginExtension>().targetCompatibility = JavaVersion.VERSION_1_8
+        the<JavaPluginExtension>().sourceCompatibility = JavaVersion.VERSION_21
+        the<JavaPluginExtension>().targetCompatibility = JavaVersion.VERSION_21
     }
 
     tasks.withType<JavaCompile> {

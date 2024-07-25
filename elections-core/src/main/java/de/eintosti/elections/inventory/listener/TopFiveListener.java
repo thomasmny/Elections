@@ -17,8 +17,7 @@
  */
 package de.eintosti.elections.inventory.listener;
 
-import de.eintosti.elections.messages.Messages;
-import de.eintosti.elections.util.InventoryUtils;
+import de.eintosti.elections.inventory.TopFiveInventory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -29,6 +28,10 @@ public class TopFiveListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        InventoryUtils.isValidClick(event, Messages.getString("top_5.title"));
+        if (!(event.getInventory().getHolder() instanceof TopFiveInventory)) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 }

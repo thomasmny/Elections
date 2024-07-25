@@ -21,7 +21,6 @@ import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.profiles.builder.XSkull;
 import com.cryptomorin.xseries.profiles.objects.Profileable;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -73,9 +72,9 @@ public final class InventoryUtils {
         addItemStack(inventory, position, XMaterial.BLACK_STAINED_GLASS_PANE, "§7");
     }
 
-    public static ItemStack getSkull(String displayName, String identifier, List<String> lore) {
+    public static ItemStack getSkull(String displayName, Profileable profile, List<String> lore) {
         ItemStack skull = XSkull.createItem()
-                .profile(Profileable.detect(identifier))
+                .profile(profile)
                 .apply();
         ItemMeta itemMeta = skull.getItemMeta();
 
@@ -89,37 +88,15 @@ public final class InventoryUtils {
         return skull;
     }
 
-    public static ItemStack getSkull(String displayName, String identifier, String... lore) {
-        return getSkull(displayName, identifier, Arrays.asList(lore));
+    public static ItemStack getSkull(String displayName, Profileable profile, String... lore) {
+        return getSkull(displayName, profile, Arrays.asList(lore));
     }
 
-    public static void addSkull(Inventory inventory, int position, String displayName, String identifier, String... lore) {
-        inventory.setItem(position, getSkull(displayName, identifier, lore));
+    public static void addSkull(Inventory inventory, int position, String displayName, Profileable profile, String... lore) {
+        inventory.setItem(position, getSkull(displayName, profile, lore));
     }
 
-    public static void addSkull(Inventory inventory, int position, String displayName, String identifier, List<String> lore) {
-        inventory.setItem(position, getSkull(displayName, identifier, lore));
-    }
-
-    /**
-     * Checks whether the clicked {@link Inventory} is equivalent to the inventory with the given name.<br>
-     * Also makes sure that the clicked {@link ItemStack} is not {@code null} and if so, cancels the event.
-     *
-     * @param event         The inventory click event
-     * @param inventoryName The name of the inventory to compare with
-     * @return {@code true} if the above is true, {@code false} otherwise
-     */
-    public static boolean isValidClick(InventoryClickEvent event, String inventoryName) {
-        if (!event.getView().getTitle().equals(inventoryName)) {
-            return false;
-        }
-
-        ItemStack itemStack = event.getCurrentItem();
-        if (itemStack == null || itemStack.getType() == XMaterial.AIR.parseMaterial() || !itemStack.hasItemMeta()) {
-            return false;
-        }
-
-        event.setCancelled(true);
-        return true;
+    public static void addSkull(Inventory inventory, int position, String displayName, Profileable profile, List<String> lore) {
+        inventory.setItem(position, getSkull(displayName, profile, lore));
     }
 }

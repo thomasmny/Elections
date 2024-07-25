@@ -19,7 +19,7 @@ package de.eintosti.elections.election.phase;
 
 import de.eintosti.elections.api.election.phase.Phase;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.election.Election;
 import de.eintosti.elections.election.ElectionSettings;
 import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.external.StringUtils;
@@ -44,7 +44,7 @@ import java.util.UUID;
 @NullMarked
 public abstract class ScoreboardPhase extends CountdownPhase {
 
-    protected final ElectionImpl election;
+    protected final Election election;
     protected final ElectionSettings settings;
     private final PhaseType phaseType;
 
@@ -59,7 +59,7 @@ public abstract class ScoreboardPhase extends CountdownPhase {
      * @param election  The election for which the scoreboard shows information about
      * @param phaseType The phase
      */
-    public ScoreboardPhase(ElectionImpl election, PhaseType phaseType) {
+    public ScoreboardPhase(Election election, PhaseType phaseType) {
         super(election, phaseType);
 
         this.election = election;

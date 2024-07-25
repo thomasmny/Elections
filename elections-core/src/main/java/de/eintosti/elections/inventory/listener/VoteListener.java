@@ -19,18 +19,17 @@ package de.eintosti.elections.inventory.listener;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.profiles.builder.XSkull;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.election.ElectionImpl;
+import de.eintosti.elections.election.Election;
 import de.eintosti.elections.inventory.VoteInventory;
 import de.eintosti.elections.messages.Messages;
-import de.eintosti.elections.util.InventoryUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
@@ -44,33 +43,40 @@ public class VoteListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!InventoryUtils.isValidClick(event, Messages.getString("vote.title"))) {
+        if (!(event.getInventory().getHolder() instanceof VoteInventory)) {
             return;
         }
 
-        ElectionImpl election = plugin.getElection();
-        if (election.getCurrentPhase().getPhaseType() != PhaseType.VOTING) {
+        ItemStack itemStack = event.getCurrentItem();
+        if (itemStack == null || itemStack.getType() == XMaterial.AIR.parseMaterial() || !itemStack.hasItemMeta()) {
             return;
         }
 
+        event.setCancelled(true);
         Player player = (Player) event.getWhoClicked();
         if (!player.hasPermission("elections.vote")) {
-            player.closeInventory();
             Messages.sendMessage(player, "election.vote.no_permission");
+            player.closeInventory();
+            return;
+        }
+
+        Election election = plugin.getElection();
+        if (election.getCurrentPhase().getPhaseType() != PhaseType.VOTING) {
+            Messages.sendMessage(player, "election.vote.over");
+            player.closeInventory();
             return;
         }
 
         VoteInventory voteInventory = plugin.getVoteInventory();
 
-        switch (XMaterial.matchXMaterial(event.getCurrentItem())) {
+        switch (XMaterial.matchXMaterial(itemStack)) {
             case LIME_DYE:
             case GRAY_DYE:
                 int skullSlot = event.getSlot() - 9;
                 if (skullSlot >= 9 && skullSlot <= 17) {
-                    ItemStack skull = event.getView().getItem(skullSlot);
-                    SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-                    String ownerName = skullMeta.getOwner();
-                    election.voteFor(player, election.getCandidate(ownerName));
+                    ItemStack skull = event.getInventory().getItem(skullSlot);
+                    String candidate = XSkull.of(skull).getProfile().getName();
+                    election.voteFor(player, election.getCandidate(candidate));
                     XSound.ENTITY_CHICKEN_EGG.play(player);
                     player.openInventory(voteInventory.getInventory(player));
                 }
