@@ -3,7 +3,7 @@
 spigot = "1.21-R0.1-SNAPSHOT"
 
 # Third Party
-adventure-api = "4.19.0"
+adventure-api = "4.20.0"
 adventure-minimessage = "4.19.0"
 adventure-platform = "4.3.4"
 annotations = "26.0.2"
