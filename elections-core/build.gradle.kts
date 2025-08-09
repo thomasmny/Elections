@@ -4,7 +4,7 @@ project.description = "Core"
 
 plugins {
     `java-library`
-    id("com.gradleup.shadow") version "9.0.0"
+    id("com.gradleup.shadow") version "9.0.1"
 }
 
 repositories {
