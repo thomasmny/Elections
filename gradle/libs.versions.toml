@@ -12,7 +12,7 @@ authlib = "6.0.54"
 bstats = "3.1.0"
 fastboard = "2.1.5"
 jspecify = "1.0.0"
-xseries = "13.4.0"
+xseries = "13.5.1"
 
 [libraries]
 #Platform expectations
