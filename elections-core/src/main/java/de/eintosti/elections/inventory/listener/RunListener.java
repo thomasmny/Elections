@@ -22,7 +22,7 @@ import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.election.Election;
+import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.inventory.RunInventory;
 import de.eintosti.elections.messages.Messages;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -67,7 +67,7 @@ public class RunListener implements Listener {
             return;
         }
 
-        Election election = plugin.getElection();
+        ElectionImpl election = plugin.getElection();
         if (election.getCurrentPhase().getPhaseType() != PhaseType.NOMINATION) {
             Messages.sendMessage(player, "election.nomination.over");
             player.closeInventory();
@@ -110,7 +110,7 @@ public class RunListener implements Listener {
         }
     }
 
-    private void openStatusAnvil(Election election, Player anvilPlayer, Candidate candidate) {
+    private void openStatusAnvil(ElectionImpl election, Player anvilPlayer, Candidate candidate) {
         int maxLength = election.getSettings().maxStatusLength().get();
         new AnvilGUI.Builder()
                 .onClick((slot, stateSnapshot) -> {

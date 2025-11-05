@@ -19,16 +19,16 @@ package de.eintosti.elections.election.phase;
 
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.election.Election;
+import de.eintosti.elections.election.ElectionImpl;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class SetupPhase extends AbstractPhase {
 
     private final ElectionsPlugin plugin;
-    private final Election election;
+    private final ElectionImpl election;
 
-    public SetupPhase(ElectionsPlugin plugin, Election election) {
+    public SetupPhase(ElectionsPlugin plugin, ElectionImpl election) {
         this.plugin = plugin;
         this.election = election;
     }

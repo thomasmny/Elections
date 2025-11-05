@@ -22,7 +22,7 @@ import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.profiles.builder.XSkull;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.election.Election;
+import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.inventory.VoteInventory;
 import de.eintosti.elections.messages.Messages;
 import org.bukkit.entity.Player;
@@ -60,7 +60,7 @@ public class VoteListener implements Listener {
             return;
         }
 
-        Election election = plugin.getElection();
+        ElectionImpl election = plugin.getElection();
         if (election.getCurrentPhase().getPhaseType() != PhaseType.VOTING) {
             Messages.sendMessage(player, "election.vote.over");
             player.closeInventory();

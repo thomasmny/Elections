@@ -33,6 +33,11 @@ public abstract class ElectionEvent extends Event {
 
     private final Election election;
 
+    /**
+     * Creates a new ElectionEvent instance.
+     *
+     * @param election The election involved in this event
+     */
     @ApiStatus.Internal
     public ElectionEvent(Election election) {
         this.election = election;
@@ -47,11 +52,19 @@ public abstract class ElectionEvent extends Event {
         return election;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public HandlerList getHandlers() {
         return HANDLER_LIST;
     }
 
+    /**
+     * Gets the handler list for this event type.
+     *
+     * @return The handler list for this event type
+     */
     public static HandlerList getHandlerList() {
         return HANDLER_LIST;
     }

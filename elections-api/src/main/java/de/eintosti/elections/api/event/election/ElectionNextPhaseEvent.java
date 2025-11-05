@@ -30,6 +30,13 @@ public class ElectionNextPhaseEvent extends ElectionEvent {
     private final PhaseType oldPhase;
     private final PhaseType newPhase;
 
+    /**
+     * Creates a new ElectionNextPhaseEvent instance.
+     *
+     * @param election The election that is transitioning to the next phase
+     * @param oldPhase The previous phase type
+     * @param newPhase The new phase type
+     */
     @ApiStatus.Internal
     public ElectionNextPhaseEvent(Election election, PhaseType oldPhase, PhaseType newPhase) {
         super(election);
@@ -38,10 +45,20 @@ public class ElectionNextPhaseEvent extends ElectionEvent {
         this.newPhase = newPhase;
     }
 
+    /**
+     * Gets the previous phase type of the election.
+     *
+     * @return The previous phase type
+     */
     public PhaseType getOldPhase() {
         return oldPhase;
     }
 
+    /**
+     * Gets the new phase type of the election.
+     *
+     * @return The new phase type
+     */
     public PhaseType getNewPhase() {
         return newPhase;
     }

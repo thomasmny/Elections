@@ -20,7 +20,7 @@ package de.eintosti.elections.config;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
-import de.eintosti.elections.election.Election;
+import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.election.ElectionSettings;
 import de.eintosti.elections.election.candidate.ElectionCandidate;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,9 +44,9 @@ public class ElectionStorage extends ConfigurationFile {
         saveFile();
     }
 
-    public Election loadElection() {
+    public ElectionImpl loadElection() {
         if (!this.file.exists()) {
-            return Election.init();
+            return ElectionImpl.init();
         }
 
         ElectionSettings settings = parseSettings();
@@ -54,7 +54,7 @@ public class ElectionStorage extends ConfigurationFile {
         Map<UUID, Candidate> nominations = parseNominations();
         Map<UUID, Candidate> votes = parseVotes(nominations);
 
-        return Election.unfreeze(settings, nominations, votes, currentPhase);
+        return ElectionImpl.unfreeze(settings, nominations, votes, currentPhase);
     }
 
     private ElectionSettings parseSettings() {

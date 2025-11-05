@@ -25,6 +25,11 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class ElectionCancelEvent extends ElectionEvent {
 
+    /**
+     * Creates a new ElectionCancelEvent instance.
+     *
+     * @param election The election that has been cancelled
+     */
     @ApiStatus.Internal
     public ElectionCancelEvent(Election election) {
         super(election);

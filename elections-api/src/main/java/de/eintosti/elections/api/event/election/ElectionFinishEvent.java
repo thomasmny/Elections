@@ -30,6 +30,12 @@ public class ElectionFinishEvent extends ElectionEvent {
 
     private final List<Candidate> winners;
 
+    /**
+     * Creates a new ElectionFinishEvent instance.
+     *
+     * @param election The election that has finished
+     * @param winners  The list of candidates who won the election
+     */
     @ApiStatus.Internal
     public ElectionFinishEvent(Election election, List<Candidate> winners) {
         super(election);

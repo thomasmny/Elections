@@ -20,7 +20,7 @@ package de.eintosti.elections.command.subcommand;
 import com.cryptomorin.xseries.XSound;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.command.SubCommand;
-import de.eintosti.elections.election.Election;
+import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.messages.Messages;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NullMarked;
@@ -36,7 +36,7 @@ public class TopFiveCommand implements SubCommand {
 
     @Override
     public void execute(Player player, String[] args) {
-        final Election election = plugin.getElection();
+        final ElectionImpl election = plugin.getElection();
 
         switch (election.getCurrentPhase().getPhaseType()) {
             case VOTING:

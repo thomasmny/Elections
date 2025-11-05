@@ -20,6 +20,9 @@ package de.eintosti.elections.api;
 import de.eintosti.elections.api.election.Election;
 import org.jspecify.annotations.NullMarked;
 
+/**
+ * Main interface for accessing election-related functionalities.
+ */
 @NullMarked
 public interface Elections {
 

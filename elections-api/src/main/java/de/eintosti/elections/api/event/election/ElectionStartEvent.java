@@ -25,6 +25,11 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class ElectionStartEvent extends ElectionEvent {
 
+    /**
+     * Creates a new ElectionStartEvent instance.
+     *
+     * @param election The election that has started
+     */
     @ApiStatus.Internal
     public ElectionStartEvent(Election election) {
         super(election);

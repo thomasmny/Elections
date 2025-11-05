@@ -22,7 +22,7 @@ import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.candidate.Candidate;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.api.event.election.ElectionFinishEvent;
-import de.eintosti.elections.election.Election;
+import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.messages.Messages;
 import de.eintosti.elections.util.external.StringUtils;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -41,13 +41,13 @@ import java.util.stream.Collectors;
 public class FinishPhase extends AbstractPhase {
 
     private final ElectionsPlugin plugin;
-    private final Election election;
+    private final ElectionImpl election;
 
     private final List<Candidate> winners;
     private final List<UUID> notified;
     private int winningCount = 0;
 
-    public FinishPhase(ElectionsPlugin plugin, Election election) {
+    public FinishPhase(ElectionsPlugin plugin, ElectionImpl election) {
         this.plugin = plugin;
         this.election = election;
 
