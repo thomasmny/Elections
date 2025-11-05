@@ -34,6 +34,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jspecify.annotations.NullMarked;
@@ -110,8 +112,14 @@ public class VoteInventory extends PaginatedInventory implements InventoryHolder
             prefix = "§a";
         }
 
+        ItemStack itemStack = InventoryUtils.getItemStack(material, displayName);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
+        pdc.set(InventoryUtils.CANDIDATE_KEY, PersistentDataType.STRING, candidate.getUniqueId().toString());
+        itemStack.setItemMeta(itemMeta);
+
         InventoryUtils.addSkull(inventory, position, prefix + candidate.getName(), Profileable.of(candidate.getUniqueId()), status);
-        InventoryUtils.addItemStack(inventory, position + 9, material, displayName);
+        inventory.setItem(position + 9, itemStack);
     }
 
     private void addBorder(Player player) {

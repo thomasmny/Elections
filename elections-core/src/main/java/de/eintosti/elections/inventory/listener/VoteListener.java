@@ -19,18 +19,22 @@ package de.eintosti.elections.inventory.listener;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
-import com.cryptomorin.xseries.profiles.builder.XSkull;
 import de.eintosti.elections.ElectionsPlugin;
 import de.eintosti.elections.api.election.phase.PhaseType;
 import de.eintosti.elections.election.ElectionImpl;
 import de.eintosti.elections.inventory.VoteInventory;
 import de.eintosti.elections.messages.Messages;
+import de.eintosti.elections.util.InventoryUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.jspecify.annotations.NullMarked;
+
+import java.util.UUID;
 
 @NullMarked
 public class VoteListener implements Listener {
@@ -75,8 +79,9 @@ public class VoteListener implements Listener {
                 int skullSlot = event.getSlot() - 9;
                 if (skullSlot >= 9 && skullSlot <= 17) {
                     ItemStack skull = event.getInventory().getItem(skullSlot);
-                    String candidate = XSkull.of(skull).getProfile().getName();
-                    election.voteFor(player, election.getCandidate(candidate));
+                    PersistentDataContainer pdc = skull.getItemMeta().getPersistentDataContainer();
+                    UUID candidateId = UUID.fromString(pdc.get(InventoryUtils.CANDIDATE_KEY, PersistentDataType.STRING));
+                    election.voteFor(player, election.getCandidate(candidateId));
                     XSound.ENTITY_CHICKEN_EGG.play(player);
                     player.openInventory(voteInventory.getInventory(player));
                 }

@@ -21,11 +21,15 @@ import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.profiles.builder.XSkull;
 import com.cryptomorin.xseries.profiles.objects.Profileable;
+import de.eintosti.elections.ElectionsPlugin;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,18 +37,27 @@ import java.util.List;
 @NullMarked
 public final class InventoryUtils {
 
+    public static final NamespacedKey CANDIDATE_KEY = new NamespacedKey(JavaPlugin.getPlugin(ElectionsPlugin.class), "candidate");
+    ;
     private InventoryUtils() {
         throw new IllegalStateException("This is a utility class");
     }
 
-    public static ItemStack getItemStack(XMaterial material, String displayName, List<String> lore) {
+    public static ItemStack getItemStack(XMaterial material, String displayName) {
+        return getItemStack(material, displayName, null);
+    }
+
+    public static ItemStack getItemStack(XMaterial material, String displayName, @Nullable List<String> lore) {
         ItemStack itemStack = material.parseItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
         itemMeta.setDisplayName(displayName);
         itemMeta.addItemFlags(ItemFlag.values());
-        itemMeta.setLore(lore);
         itemMeta.setUnbreakable(true);
+
+        if (lore != null && !lore.isEmpty()) {
+            itemMeta.setLore(lore);
+        }
 
         itemStack.setItemMeta(itemMeta);
         return itemStack;
